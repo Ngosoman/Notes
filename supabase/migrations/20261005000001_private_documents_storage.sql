@@ -6,6 +6,11 @@ on conflict (id) do update
       file_size_limit = excluded.file_size_limit,
       allowed_mime_types = excluded.allowed_mime_types;
 
+alter table public.documents
+  add constraint documents_storage_path_owner
+  check (storage_path ~ ('^' || user_id::text || '/' || id::text || '/[^/]+$'))
+  not valid;
+
 create policy "Owners can read their private documents"
   on storage.objects for select to authenticated
   using (

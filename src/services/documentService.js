@@ -2,10 +2,11 @@ import { getSupabaseClient } from './supabaseClient.js'
 
 const documentFields = 'id, title, filename, storage_path, mime_type, file_size_bytes, page_count, status, subject_id, created_at, updated_at, subject:subjects(id, name, color)'
 
-export async function createDocumentRecord({ title, filename, storagePath, fileSizeBytes }) {
+export async function createDocumentRecord({ id, title, filename, storagePath, fileSizeBytes }) {
   const { data, error } = await getSupabaseClient()
     .from('documents')
     .insert({
+      id,
       title,
       filename,
       storage_path: storagePath,

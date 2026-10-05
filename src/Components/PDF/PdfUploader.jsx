@@ -90,6 +90,7 @@ export default function PdfUploader() {
         const documentId = crypto.randomUUID()
         const storagePath = createDocumentStoragePath(user.id, documentId, selectedFile.name)
         record = await createDocumentRecord({
+          id: documentId,
           title: getTitle(selectedFile.name),
           filename: selectedFile.name,
           storagePath,
