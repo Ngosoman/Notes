@@ -9,8 +9,6 @@ export default function useSubjects() {
 
   useEffect(() => {
     let isActive = true
-    setIsLoading(true)
-    setError(null)
 
     listSubjects()
       .then((rows) => { if (isActive) setSubjects(rows) })
@@ -23,5 +21,11 @@ export default function useSubjects() {
     return () => { isActive = false }
   }, [reloadToken])
 
-  return { subjects, isLoading, error, refresh: () => setReloadToken((token) => token + 1) }
+  function refresh() {
+    setIsLoading(true)
+    setError(null)
+    setReloadToken((token) => token + 1)
+  }
+
+  return { subjects, isLoading, error, refresh }
 }

@@ -3,33 +3,38 @@ import { ArrowLeft, FileText } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { WorkspaceError, WorkspaceLoading } from '../Components/Workspace/WorkspaceState.jsx'
 import { getDocument } from '../services/documentService.js'
-import { formatDate, formatFileSize, getDataErrorMessage } from '../utils/dataErrors.js'
+import { formatDate, formatFileSize } from '../utils/dataErrors.js'
 
 export default function DocumentDetails() {
   const { documentId } = useParams()
-  const [document, setDocument] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [result, setResult] = useState({ documentId: null, document: null, isLoading: true, error: null })
   const [reloadToken, setReloadToken] = useState(0)
 
   useEffect(() => {
     let isActive = true
-    setIsLoading(true)
-    setError(null)
     getDocument(documentId)
-      .then((row) => { if (isActive) setDocument(row) })
+      .then((row) => { if (isActive) setResult({ documentId, document: row, isLoading: false, error: null }) })
       .catch((loadError) => {
         if (import.meta.env.DEV) console.error('Unable to load document details.', loadError)
-        if (isActive) setError(loadError)
+        if (isActive) setResult({ documentId, document: null, isLoading: false, error: loadError })
       })
-      .finally(() => { if (isActive) setIsLoading(false) })
     return () => { isActive = false }
   }, [documentId, reloadToken])
+
+  const isCurrentRequest = result.documentId === documentId
+  const isLoading = !isCurrentRequest || result.isLoading
+  const document = isCurrentRequest ? result.document : null
+  const error = isCurrentRequest ? result.error : null
+
+  function retry() {
+    setResult({ documentId, document: null, isLoading: true, error: null })
+    setReloadToken((token) => token + 1)
+  }
 
   return (
     <div className="workspace-content">
       <Link className="workspace-back-link" to="/documents"><ArrowLeft size={15} aria-hidden="true" /> All documents</Link>
-      {isLoading ? <WorkspaceLoading label="Loading document" /> : error ? <section className="workspace-panel"><WorkspaceError error={error} itemName="this document" onRetry={() => setReloadToken((token) => token + 1)} /></section> : !document ? <section className="workspace-panel"><div className="workspace-state"><span className="workspace-state-icon"><FileText size={20} aria-hidden="true" /></span><h3>Document not found</h3><p>It may have been removed or you may not have access to it.</p><Link className="button button-secondary" to="/documents">Return to documents</Link></div></section> : <>
+      {isLoading ? <WorkspaceLoading label="Loading document" /> : error ? <section className="workspace-panel"><WorkspaceError error={error} itemName="this document" onRetry={retry} /></section> : !document ? <section className="workspace-panel"><div className="workspace-state"><span className="workspace-state-icon"><FileText size={20} aria-hidden="true" /></span><h3>Document not found</h3><p>It may have been removed or you may not have access to it.</p><Link className="button button-secondary" to="/documents">Return to documents</Link></div></section> : <>
         <section className="workspace-page-heading document-detail-heading">
           <div><p className="workspace-eyebrow">DOCUMENT / DETAILS</p><h1>{document.title || document.filename}</h1><p>{document.subject ? <Link className="workspace-text-link" to={`/subjects/${document.subject.id}`}>{document.subject.name}</Link> : 'Uncategorized'}</p></div>
           <span className="document-status" data-status={document.status}>{document.status}</span>

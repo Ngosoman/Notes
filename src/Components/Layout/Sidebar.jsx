@@ -1,4 +1,4 @@
-import { BookOpen, BookOpenCheck, CircleHelp, FileText, LayoutDashboard, LogOut, MessageSquareText, Plane, UserRound, X } from 'lucide-react'
+import { BookOpen, BookOpenCheck, FileText, LayoutDashboard, LogOut, MessageSquareText, Plane, UserRound, X } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 

@@ -9,8 +9,6 @@ export default function useDocuments() {
 
   useEffect(() => {
     let isActive = true
-    setIsLoading(true)
-    setError(null)
 
     listDocuments()
       .then((rows) => { if (isActive) setDocuments(rows) })
@@ -23,5 +21,11 @@ export default function useDocuments() {
     return () => { isActive = false }
   }, [reloadToken])
 
-  return { documents, isLoading, error, refresh: () => setReloadToken((token) => token + 1) }
+  function refresh() {
+    setIsLoading(true)
+    setError(null)
+    setReloadToken((token) => token + 1)
+  }
+
+  return { documents, isLoading, error, refresh }
 }
