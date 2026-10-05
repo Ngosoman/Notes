@@ -15,9 +15,12 @@ import PhasePlaceholder from './Pages/PhasePlaceholder.jsx'
 import Register from './Pages/Register.jsx'
 import SubjectDetails from './Pages/SubjectDetails.jsx'
 import Subjects from './Pages/Subjects.jsx'
+import Quiz from './Pages/Quiz.jsx'
+import StudyMode from './Pages/StudyMode.jsx'
 
 const UploadNotes = lazy(() => import('./Pages/UploadNotes.jsx'))
 const Summary = lazy(() => import('./Pages/Summary.jsx'))
+const Flashcards = lazy(() => import('./Pages/Flashcards.jsx'))
 
 function App() {
   return (
@@ -39,9 +42,9 @@ function App() {
                 <Route path="/documents/:documentId" element={<DocumentDetails />} />
                 <Route path="/upload" element={<UploadNotes />} />
                 <Route path="/summary/:documentId" element={<Summary />} />
-                <Route path="/flashcards/:documentId" element={<PhasePlaceholder title="Flashcards" />} />
-                <Route path="/quiz/:quizId" element={<PhasePlaceholder title="Quiz" />} />
-                <Route path="/study" element={<PhasePlaceholder title="Study mode" />} />
+                <Route path="/flashcards/:documentId" element={<Flashcards />} />
+                <Route path="/quiz/:quizId" element={<Quiz />} />
+                <Route path="/study" element={<StudyMode />} />
                 <Route path="/ask" element={<PhasePlaceholder title="Ask your notes" />} />
                 <Route path="/subjects" element={<Subjects />} />
                 <Route path="/subjects/:subjectId" element={<SubjectDetails />} />

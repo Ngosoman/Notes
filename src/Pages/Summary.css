@@ -19,6 +19,8 @@
 .summary-toc a { display: inline-flex; min-height: 28px; flex: 0 0 auto; align-items: center; gap: 6px; padding: 0 8px; color: #52616a; border-radius: 3px; font-size: 9px; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .summary-toc a:hover { color: #214d9f; background: #edf2fc; }
 .summary-toc small { color: #7a898c; font-family: var(--mono); font-size: 8px; }
+.summary-study-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 13px; }
+.summary-study-links .button { min-height: 36px; padding-inline: 11px; font-size: 10px; }
 .summary-overview { margin-bottom: 13px; padding: 22px 24px; border: 1px solid #dce6e1; border-left: 3px solid #328765; border-radius: 5px; background: #fff; }
 .summary-card-eyebrow { margin: 0; color: #47725f; font-family: var(--mono); font-size: 8px; }
 .summary-overview h2 { margin: 7px 0 0; color: #263640; font-family: var(--heading); font-size: 16px; }

@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { ArrowLeft, ArrowRight, BookOpenCheck, BookOpenText, BrainCircuit, CheckCircle2, Clock3, FileQuestion, LoaderCircle, Sparkles } from 'lucide-react'
+import { ArrowRight, BookOpenCheck, BookOpenText, BrainCircuit, CheckCircle2, Clock3, FileQuestion, LoaderCircle, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import StudyProgress from '../Components/Study/StudyProgress.jsx'
 import { WorkspaceEmpty, WorkspaceError, WorkspaceLoading } from '../Components/Workspace/WorkspaceState.jsx'
 import useDocuments from '../hooks/useDocuments.js'
 import { finishStudySession, generateStudySet, startStudySession } from '../services/studyService.js'
@@ -71,13 +70,12 @@ export default function StudyMode() {
 
   if (session) {
     return <div className="workspace-content study-page">
-      <button className="workspace-back-link study-session-back" type="button" onClick={() => setSession(null)}><ArrowLeft size={15} /> Exit session</button>
       <section className="workspace-page-heading"><div><p className="workspace-eyebrow">ACTIVE STUDY SESSION</p><h1>{session.document.title || session.document.filename}</h1><p>{mode === 'deep_study' ? 'Deep study' : 'Quick review'} · Session timer started</p></div></section>
       <section className="workspace-panel study-session-panel">
         <span className="study-session-icon"><Clock3 size={21} aria-hidden="true" /></span>
         <h2>Study at your own pace.</h2>
         <p>Your session is being timed. Open the saved summary, review the material, then finish here to record the session duration.</p>
-        <div className="study-session-actions"><Link className="button button-secondary" to={`/summary/${documentId}`} target="_blank" rel="noreferrer">Open summary in new tab <ArrowRight size={14} /></Link><button className="button" type="button" onClick={finishSession} disabled={isStarting}>{isStarting ? 'Saving…' : 'Finish session'}</button></div>
+        <div className="study-session-actions"><Link className="button button-secondary" to={`/summary/${documentId}`}>Open summary <ArrowRight size={14} /></Link><button className="button" type="button" onClick={finishSession} disabled={isStarting}>{isStarting ? 'Saving…' : 'Finish session'}</button></div>
       </section>
     </div>
   }

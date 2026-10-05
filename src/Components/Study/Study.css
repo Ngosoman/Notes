@@ -8,6 +8,27 @@
 .study-progress progress::-webkit-progress-bar { border-radius: 6px; background: #e7ede9; }
 .study-progress progress::-webkit-progress-value { border-radius: 6px; background: #2c845f; }
 .study-progress progress::-moz-progress-bar { border-radius: 6px; background: #2c845f; }
+.study-progress-panel { display: grid; gap: 10px; padding: 15px 17px; border: 1px solid #e0e6e3; border-radius: 5px; background: white; }
+.study-progress-secondary { display: flex; flex-wrap: wrap; gap: 13px; color: #75838a; font-size: 9px; }
+.study-progress-secondary span { display: inline-flex; align-items: center; gap: 5px; }
+.study-progress-secondary span:first-child { color: #327354; }
+.study-end-session { display: block; margin: 18px auto 0; padding: 7px 10px; color: #68777e; border: 0; background: transparent; font-size: 10px; text-decoration: underline; cursor: pointer; }
+.quiz-progress-panel { margin-bottom: 13px; padding: 13px 16px; border: 1px solid #e0e6e3; border-radius: 5px; background: white; }
+.quiz-nav-count { color: #78868c; font-family: var(--mono); font-size: 9px; }
+.study-launch-card { text-align: left; cursor: pointer; }
+.study-launch-card.is-selected { border-color: #9fc8b0; background: #f8fcf9; box-shadow: inset 0 0 0 1px #d8ebdf; }
+.study-launch-card > strong { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; color: #376b52; font-size: 10px; }
+.study-start-button { min-height: 43px; margin-top: 14px; }
+.study-success-banner { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; padding: 10px 12px; color: #24664f; border: 1px solid #b9ddce; border-radius: 5px; background: #effaf5; font-size: 11px; }
+.study-setup-panel { display: grid; grid-template-columns: minmax(0,1fr) minmax(170px,.4fr); gap: 12px; margin-bottom: 14px; padding: 16px; border: 1px solid #e0e6e3; border-radius: 5px; background: #fff; }
+.study-setup-field { display: grid; gap: 6px; }
+.study-setup-field label { color: #53626a; font-size: 10px; font-weight: 700; }
+.study-session-panel { display: grid; justify-items: start; padding: 24px; }
+.study-session-icon { display: grid; width: 43px; height: 43px; margin-bottom: 14px; place-items: center; color: #316c50; border: 1px solid #d2e6d9; border-radius: 5px; background: #eff8f3; }
+.study-session-panel h2 { margin: 0; color: #293a43; font-family: var(--heading); font-size: 18px; }
+.study-session-panel > p { max-width: 550px; margin: 8px 0 0; color: #6d7b82; font-size: 11px; line-height: 1.7; }
+.study-session-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 19px; }
+.study-session-actions .button { min-height: 39px; font-size: 10px; }
 .flashcard-stage { display: grid; place-items: center; padding: 18px 0; }
 .flashcard { position: relative; display: flex; width: min(100%,690px); min-height: 330px; align-items: center; justify-content: center; padding: 52px 48px; color: #172b36; border: 1px solid #dbe4e0; border-radius: 7px; background: #fff; box-shadow: 0 9px 27px rgba(18,38,47,.06); text-align: center; cursor: pointer; transition: transform 160ms ease,box-shadow 160ms ease,border-color 160ms ease; }
 .flashcard:hover { transform: translateY(-2px); border-color: #aebfba; box-shadow: 0 13px 30px rgba(18,38,47,.1); }

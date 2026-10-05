@@ -48,13 +48,16 @@ export default function Flashcards() {
   }
 
   async function beginSession() {
-    if (session) return
+    if (session) return session
     try {
       const started = await startStudySession({ documentId, sessionType: 'flashcards' })
-      setSession({ ...started, reviewed: 0 })
+      const activeSession = { ...started, reviewed: 0 }
+      setSession(activeSession)
+      return activeSession
     } catch (error) {
       if (import.meta.env.DEV) console.error('Unable to start flashcard study session.', error)
       setErrorMessage(getDataErrorMessage(error, 'the study session'))
+      throw error
     }
   }
 
@@ -63,12 +66,12 @@ export default function Flashcards() {
     setErrorMessage('')
     setIsSavingReview(true)
     try {
-      await beginSession()
+      const activeSession = await beginSession()
       const updated = await updateFlashcardReview({ ...card, review_state: reviewState })
       setResult((current) => current.documentId === documentId
         ? { ...current, cards: current.cards.map((item) => item.id === updated.id ? { ...item, ...updated } : item) }
         : current)
-      if (session) setSession((current) => current ? { ...current, reviewed: current.reviewed + 1 } : current)
+      if (activeSession) setSession((current) => current ? { ...current, reviewed: current.reviewed + 1 } : current)
       setIsFlipped(false)
       setCurrentIndex((index) => Math.min(index + 1, cards.length - 1))
     } catch (error) {

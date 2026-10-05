@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Bookmark, BookmarkCheck, Check, Copy, LoaderCircle, Printer, RefreshCw, Sparkles } from 'lucide-react'
+import { ArrowLeft, Bookmark, BookmarkCheck, BrainCircuit, Check, Copy, FileQuestion, LoaderCircle, Printer, RefreshCw, Sparkles } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import SummarySection, { SourcePages } from '../Components/Notes/SummarySection.jsx'
 import { WorkspaceError, WorkspaceLoading } from '../Components/Workspace/WorkspaceState.jsx'
@@ -148,6 +148,10 @@ export default function Summary() {
           <span>IN THIS GUIDE</span>
           {sections.map((section) => <a href={`#summary-${section.id}`} key={section.id}>{section.label}<small>{section.count}</small></a>)}
         </nav>
+        <div className="summary-study-links">
+          <Link className="button button-secondary" to={`/flashcards/${documentId}`}><BrainCircuit size={15} aria-hidden="true" /> Study flashcards</Link>
+          <Link className="button button-secondary" to="/study"><FileQuestion size={15} aria-hidden="true" /> Start a quiz</Link>
+        </div>
         <section className="summary-overview" aria-labelledby="overview-heading">
           <p className="summary-card-eyebrow">DOCUMENT OVERVIEW</p>
           <h2 id="overview-heading">The big picture</h2>
