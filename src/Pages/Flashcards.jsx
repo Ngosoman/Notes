@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, LoaderCircle, RotateCw, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, LoaderCircle, RefreshCw, RotateCw, Sparkles } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import Flashcard from '../Components/Study/Flashcard.jsx'
 import StudyProgress from '../Components/Study/StudyProgress.jsx'
@@ -113,7 +113,7 @@ export default function Flashcards() {
       </section>
       {errorMessage && <p className="workspace-error-banner" role="alert">{errorMessage}</p>}
       {isLoading ? <WorkspaceLoading label="Loading flashcards" /> : result.error ? <section className="workspace-panel"><WorkspaceError error={result.error} itemName="flashcards" onRetry={reload} /></section> : cards.length === 0 ? (
-        <section className="workspace-panel"><WorkspaceEmpty kind="documents" title="No flashcards yet" description="Generate cards from the saved study summary. The cards will be based on this document’s extracted notes." actionLabel={isGenerating ? 'Generating…' : 'Generate flashcards'} actionTo={null} /><div className="study-empty-actions"><button className="button" type="button" onClick={generateCards} disabled={isGenerating || !['uploaded', 'completed'].includes(document?.status)}>{isGenerating ? <><LoaderCircle className="auth-spinner" size={15} /> Generating</> : <><Sparkles size={15} /> Generate flashcards</>}</button><Link className="button button-secondary" to={`/summary/${documentId}`}>Open summary</Link></div></section>
+        <section className="workspace-panel"><WorkspaceEmpty kind="documents" title="No flashcards yet" description="Generate cards from the saved study summary. The cards will be based on this document’s extracted notes." /><div className="study-empty-actions"><button className="button" type="button" onClick={generateCards} disabled={isGenerating || !['uploaded', 'completed'].includes(document?.status)}>{isGenerating ? <><LoaderCircle className="auth-spinner" size={15} /> Generating</> : <><Sparkles size={15} /> Generate flashcards</>}</button><Link className="button button-secondary" to={`/summary/${documentId}`}>Open summary</Link></div></section>
       ) : <>
         <div className="study-progress-panel"><StudyProgress current={reviewedCount} total={cards.length} label="Cards reviewed" /><div className="study-progress-secondary"><span><Check size={13} aria-hidden="true" /> {knownCount} known</span><span><RotateCw size={13} aria-hidden="true" /> {cards.length - knownCount} to review</span></div></div>
         <div className="flashcard-stage"><Flashcard card={card} isFlipped={isFlipped} onFlip={() => setIsFlipped((flipped) => !flipped)} /></div>
