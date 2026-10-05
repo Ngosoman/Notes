@@ -7,7 +7,7 @@ import StudyProgress from '../Components/Study/StudyProgress.jsx'
 import { WorkspaceError, WorkspaceLoading } from '../Components/Workspace/WorkspaceState.jsx'
 import { getQuiz, submitQuiz } from '../services/studyService.js'
 import { getDataErrorMessage } from '../utils/dataErrors.js'
-import './Study.css'
+import '../Components/Study/Study.css'
 
 export default function Quiz() {
   const { quizId } = useParams()
@@ -79,14 +79,14 @@ export default function Quiz() {
       </section>
       {actionError && <p className="workspace-error-banner" role="alert">{actionError}</p>}
       {submissionResult ? <QuizResult result={submissionResult} onRetry={() => navigate('/study')} /> : questions.length === 0 ? <section className="workspace-panel"><div className="workspace-state"><h3>This quiz has no questions</h3><p>Generate a new quiz from the study mode page.</p><Link className="button" to="/study">Open study mode</Link></div></section> : <>
-+        <section className="quiz-progress-panel"><StudyProgress current={answeredCount} total={questions.length} label="Questions answered" /></section>
-+        <QuizQuestion question={question} number={currentIndex + 1} selectedAnswer={answers[question.id] || ''} onAnswer={chooseAnswer} disabled={isSubmitting} />
-+        <div className="quiz-navigation">
-+          <button className="button button-secondary" type="button" disabled={currentIndex === 0 || isSubmitting} onClick={() => setCurrentIndex((index) => index - 1)}><ArrowLeft size={15} /> Previous</button>
-+          <span className="quiz-nav-count">Question {currentIndex + 1} of {questions.length}</span>
-+          <button className="button button-secondary" type="button" disabled={currentIndex >= questions.length - 1 || isSubmitting} onClick={() => setCurrentIndex((index) => index + 1)}>Next <ArrowRight size={15} /></button>
-+        </div>
-+        <div className="quiz-submit-bar"><p>{questions.length - answeredCount ? `${questions.length - answeredCount} unanswered` : 'All questions answered'} · Answers stay hidden until submission.</p><button className="button" type="button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? <><LoaderCircle className="auth-spinner" size={15} /> Checking</> : <><Send size={14} /> Submit quiz</>}</button></div>
+        <section className="quiz-progress-panel"><StudyProgress current={answeredCount} total={questions.length} label="Questions answered" /></section>
+        <QuizQuestion question={question} number={currentIndex + 1} selectedAnswer={answers[question.id] || ''} onAnswer={chooseAnswer} disabled={isSubmitting} />
+        <div className="quiz-navigation">
+          <button className="button button-secondary" type="button" disabled={currentIndex === 0 || isSubmitting} onClick={() => setCurrentIndex((index) => index - 1)}><ArrowLeft size={15} /> Previous</button>
+          <span className="quiz-nav-count">Question {currentIndex + 1} of {questions.length}</span>
+          <button className="button button-secondary" type="button" disabled={currentIndex >= questions.length - 1 || isSubmitting} onClick={() => setCurrentIndex((index) => index + 1)}>Next <ArrowRight size={15} /></button>
+        </div>
+        <div className="quiz-submit-bar"><p>{questions.length - answeredCount ? `${questions.length - answeredCount} unanswered` : 'All questions answered'} · Answers stay hidden until submission.</p><button className="button" type="button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? <><LoaderCircle className="auth-spinner" size={15} /> Checking</> : <><Send size={14} /> Submit quiz</>}</button></div>
 +      </>}
 +    </div>
 +  )

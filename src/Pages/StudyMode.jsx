@@ -5,7 +5,7 @@ import { WorkspaceEmpty, WorkspaceError, WorkspaceLoading } from '../Components/
 import useDocuments from '../hooks/useDocuments.js'
 import { finishStudySession, generateStudySet, startStudySession } from '../services/studyService.js'
 import { getDataErrorMessage } from '../utils/dataErrors.js'
-import './Study.css'
+import '../Components/Study/Study.css'
 
 const studyModes = [
   { id: 'quick_review', title: 'Quick review', description: 'Revisit your structured summary at a focused pace.', icon: BookOpenText, action: 'Start review' },

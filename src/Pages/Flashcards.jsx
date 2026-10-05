@@ -7,7 +7,7 @@ import { WorkspaceEmpty, WorkspaceError, WorkspaceLoading } from '../Components/
 import useDocuments from '../hooks/useDocuments.js'
 import { finishStudySession, generateStudySet, listFlashcards, startStudySession, updateFlashcardReview } from '../services/studyService.js'
 import { getDataErrorMessage } from '../utils/dataErrors.js'
-import './Study.css'
+import '../Components/Study/Study.css'
 
 export default function Flashcards() {
   const { documentId } = useParams()
