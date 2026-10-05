@@ -1,7 +1,7 @@
 import { Navigate, Link } from 'react-router-dom'
 import AuthLayout from '../Components/Auth/AuthLayout.jsx'
 import { RegisterForm } from '../Components/Auth/AuthForms.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
+import { useAuth } from '../hooks/useAuth.js'
 import '../Components/Auth/Auth.css'
 
 export default function Register() {

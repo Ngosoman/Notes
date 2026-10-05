@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, CheckCircle2, LoaderCircle } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { requestPasswordReset, signInWithPassword, signUpWithPassword, updatePassword } from '../../services/authService.js'
-import { useAuth } from '../../context/AuthContext.jsx'
+import { useAuth } from '../../hooks/useAuth.js'
 
 function friendlyAuthError(error, action) {
   if (import.meta.env.DEV) console.error(`Supabase ${action} failed.`, error)

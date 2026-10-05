@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, LogOut, Menu, Plane, X } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext.jsx'
+import { useAuth } from '../../hooks/useAuth.js'
 import './Layout.css'
 
 const sectionLinks = [

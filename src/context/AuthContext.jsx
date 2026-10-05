@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { signOut as signOutUser } from '../services/authService.js'
 import { isSupabaseConfigured, supabase } from '../services/supabaseClient.js'
 
-const AuthContext = createContext(null)
+export const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (isActive) {
         setSession(nextSession)
+        setSessionError(false)
         setIsLoading(false)
       }
     })
@@ -53,10 +54,4 @@ export function AuthProvider({ children }) {
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth must be used inside AuthProvider.')
-  return context
 }
