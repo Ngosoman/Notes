@@ -15,3 +15,7 @@ entrypoint = "./functions/generate-study-set/index.js"
 [functions.submit-quiz]
 verify_jwt = true
 entrypoint = "./functions/submit-quiz/index.js"
+
+[functions.ask-notes]
+verify_jwt = true
+entrypoint = "./functions/ask-notes/index.js"
