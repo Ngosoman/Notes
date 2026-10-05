@@ -1,1 +1,5 @@
 project_id = "aeronotes-ai"
+
+[functions.process-document]
+verify_jwt = true
+entrypoint = "./functions/process-document/index.js"
