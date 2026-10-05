@@ -184,7 +184,10 @@ Deno.serve(async (request) => {
     return respond({ error: 'We could not start processing this document.' }, 500)
   }
   if (!claimedDocument) {
-    return respond({ error: 'This document is already processing or has not finished uploading.' }, 409)
+    if (document.status === 'processing') {
+      return respond({ error: 'This document is already being processed.', code: 'ALREADY_PROCESSING' }, 409)
+    }
+    return respond({ error: 'This document has not finished uploading.', code: 'UPLOAD_INCOMPLETE' }, 409)
   }
 
   try {

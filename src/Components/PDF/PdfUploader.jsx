@@ -47,6 +47,7 @@ export default function PdfUploader() {
   const [isValidating, setIsValidating] = useState(false)
   const [uploadState, setUploadState] = useState('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [processingFailureCode, setProcessingFailureCode] = useState('')
   const [selectedSubjectId, setSelectedSubjectId] = useState('')
 
   async function selectFile(file) {
@@ -69,6 +70,7 @@ export default function PdfUploader() {
       setDocumentRecord(null)
       setObjectIsStored(false)
       setExtractionResult(null)
+      setProcessingFailureCode('')
       setProgress(0)
       setUploadState('ready')
     } catch (validationError) {
@@ -118,11 +120,12 @@ export default function PdfUploader() {
         await uploadPdf(selectedFile, record.storage_path, setProgress)
         stored = true
         setObjectIsStored(true)
+        await updateDocumentStatus(record.id, 'uploaded')
       }
-      await updateDocumentStatus(record.id, 'uploaded')
       setUploadState('processing')
       const result = await processDocument(record.id)
       setExtractionResult(result)
+      setProcessingFailureCode('')
       setUploadState('completed')
     } catch (uploadError) {
       if (import.meta.env.DEV) console.error('PDF upload or text extraction failed.', uploadError)
@@ -134,6 +137,7 @@ export default function PdfUploader() {
         }
       }
       setErrorMessage(fileValidationMessage(uploadError, stored))
+      setProcessingFailureCode(uploadError.code || '')
       setUploadState('failed')
     }
   }
@@ -143,6 +147,7 @@ export default function PdfUploader() {
     setDocumentRecord(null)
     setObjectIsStored(false)
     setExtractionResult(null)
+    setProcessingFailureCode('')
     setProgress(0)
     setErrorMessage('')
     setUploadState('idle')
@@ -206,9 +211,11 @@ export default function PdfUploader() {
 
         {uploadState === 'processing' && <div className="pdf-processing-state" role="status" aria-live="polite"><LoaderCircle className="auth-spinner" size={18} aria-hidden="true" /><span>Extracting text and preparing document sections…</span></div>}
 
-        {selectedFile && (uploadState === 'ready' || uploadState === 'failed') && <button className="button pdf-upload-button" type="button" onClick={handleUpload}>
+        {selectedFile && (uploadState === 'ready' || uploadState === 'failed') && (['NO_SELECTABLE_TEXT', 'PAGE_LIMIT_EXCEEDED', 'TEXT_LIMIT_EXCEEDED'].includes(processingFailureCode) ? (
+          <button className="button button-secondary pdf-upload-button" type="button" onClick={clearSelection}>Choose another PDF</button>
+        ) : <button className="button pdf-upload-button" type="button" onClick={handleUpload}>
           <UploadCloud size={16} aria-hidden="true" />{uploadState === 'failed' ? objectIsStored ? 'Retry text extraction' : 'Retry upload' : 'Upload PDF'}
-        </button>}
+        </button>)}
       </>}
       <p className="pdf-privacy-note">Your PDF is stored privately and is only accessible from your account.</p>
       <Link className="pdf-back-link" to="/documents">Return to documents</Link>

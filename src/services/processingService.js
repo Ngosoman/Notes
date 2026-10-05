@@ -19,7 +19,7 @@ export async function processDocument(documentId) {
   }
 
   const processingError = new Error(responseBody?.error || 'The text extraction service could not be reached.')
-  processingError.code = responseBody?.code || (responseStatus === 404 ? 'FUNCTION_UNAVAILABLE' : 'PROCESSING_FAILED')
+  processingError.code = responseBody?.code || (responseStatus === 404 ? 'FUNCTION_UNAVAILABLE' : responseStatus === 409 ? 'ALREADY_PROCESSING' : 'PROCESSING_FAILED')
   processingError.status = responseStatus
   throw processingError
 }
