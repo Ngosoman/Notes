@@ -3,7 +3,8 @@ import { CheckCircle2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 import { requestPasswordReset, updatePassword } from '../../services/authService.js'
-import { AuthInput, friendlyAuthError, SubmitButton } from './AuthFormControls.jsx'
+import { AuthInput, SubmitButton } from './AuthFormControls.jsx'
+import { friendlyAuthError } from '../../utils/authErrors.js'
 
 export default function PasswordResetForm() {
   const [email, setEmail] = useState('')

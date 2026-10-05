@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 import { signInWithPassword } from '../../services/authService.js'
-import { AuthInput, friendlyAuthError, SubmitButton } from './AuthFormControls.jsx'
+import { AuthInput, SubmitButton } from './AuthFormControls.jsx'
+import { friendlyAuthError } from '../../utils/authErrors.js'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
