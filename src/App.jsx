@@ -5,7 +5,6 @@ import PublicLayout from './Components/Layout/PublicLayout.jsx'
 import WorkspaceLayout from './Components/Layout/WorkspaceLayout.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import Dashboard from './Pages/Dashboard.jsx'
-import AskNotes from './Pages/AskNotes.jsx'
 import DocumentDetails from './Pages/DocumentDetails.jsx'
 import Documents from './Pages/Documents.jsx'
 import Landing from './Pages/Landing.jsx'
@@ -22,6 +21,7 @@ const Summary = lazy(() => import('./Pages/Summary.jsx'))
 const Flashcards = lazy(() => import('./Pages/Flashcards.jsx'))
 const Quiz = lazy(() => import('./Pages/Quiz.jsx'))
 const StudyMode = lazy(() => import('./Pages/StudyMode.jsx'))
+const AskNotes = lazy(() => import('./Pages/AskNotes.jsx'))
 
 function App() {
   return (

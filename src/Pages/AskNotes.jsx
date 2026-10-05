@@ -37,7 +37,10 @@ export default function AskNotes() {
   const [conversationError, setConversationError] = useState(null)
   const [conversationId, setConversationId] = useState(null)
   const [messages, setMessages] = useState([])
-  const [selectedDocumentIds, setSelectedDocumentIds] = useState([])
+  const [selectedDocumentIds, setSelectedDocumentIds] = useState(() => {
+    const initialDocumentId = new URLSearchParams(window.location.search).get('documentId')
+    return initialDocumentId ? [initialDocumentId] : []
+  })
   const [search, setSearch] = useState('')
   const [question, setQuestion] = useState('')
   const [isSending, setIsSending] = useState(false)
@@ -169,9 +172,9 @@ export default function AskNotes() {
         <form className="ask-composer" onSubmit={handleSubmit}>
           <label className="ask-composer-label" htmlFor="ask-question">Your question</label>
           <div className="ask-composer-input-row"><textarea id="ask-question" ref={inputRef} value={question} onChange={(event) => setQuestion(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit() } }} placeholder="Ask about a concept, formula, or process…" maxLength={2000} rows={2} disabled={isSending} /><button className="ask-send-button" type="submit" aria-label="Send question" title="Send question" disabled={isSending || !question.trim()}>{isSending ? <LoaderCircle className="auth-spinner" size={17} /> : <ArrowUp size={18} />}</button></div>
-+          <p className="ask-composer-footnote">Answers use selected notes only. If the material doesn’t support an answer, the assistant will say so.</p>
-+        </form>
-+      </section>
-+    </div>
-+  )
-+}
+          <p className="ask-composer-footnote">Answers use selected notes only. If the material doesn’t support an answer, the assistant will say so.</p>
+        </form>
+      </section>
+    </div>
+  )
+}

@@ -124,12 +124,12 @@ as $$
     chunk.content,
     chunk.page_start,
     chunk.page_end,
-    1 - (chunk.embedding <=> p_query_embedding) as similarity
+    1 - (chunk.embedding OPERATOR(extensions.<=>) p_query_embedding) as similarity
   from public.document_chunks as chunk
   where chunk.user_id = p_user_id
     and chunk.embedding is not null
     and chunk.document_id = any(p_document_ids)
-  order by chunk.embedding <=> p_query_embedding
+  order by chunk.embedding OPERATOR(extensions.<=>) p_query_embedding
   limit greatest(1, least(p_match_count, 20));
 $$;
 
