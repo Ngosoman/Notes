@@ -51,6 +51,7 @@ export default function PdfUploader() {
       if (!file.name.toLowerCase().endsWith('.pdf') || (file.type && file.type !== 'application/pdf')) {
         throw new Error('Choose a PDF file to continue.')
       }
+      if (file.name.length > 255) throw new Error('This file name is too long. Rename it to fewer than 255 characters and try again.')
       if (file.size <= 0) throw new Error('This file is empty. Choose a different PDF.')
       if (file.size > MAX_FILE_SIZE_BYTES) throw new Error('This PDF is larger than the 50 MB upload limit.')
 
