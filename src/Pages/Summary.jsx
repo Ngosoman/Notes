@@ -7,7 +7,6 @@ import { getDocument } from '../services/documentService.js'
 import { getDocumentSummary, requestDocumentSummary, setSummaryBookmarked } from '../services/summaryService.js'
 import { getDataErrorMessage } from '../utils/dataErrors.js'
 import './Summary.css'
-import './Summary.css'
 
 function getSummaryErrorMessage(error) {
   if (error?.code === 'AI_NOT_CONFIGURED') return 'AI summaries are not configured on the server yet. Add the provider settings as Supabase Edge Function secrets.'
