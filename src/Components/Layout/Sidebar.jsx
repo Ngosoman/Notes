@@ -1,4 +1,4 @@
-import { BookOpen, BookOpenCheck, FileText, LayoutDashboard, LogOut, MessageSquareText, Plane, UserRound, X } from 'lucide-react'
+import { BookOpen, BookOpenCheck, FileText, LayoutDashboard, LogOut, MessageSquareText, Plane, Upload, UserRound, X } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 
@@ -6,6 +6,7 @@ const workspaceLinks = [
   { to: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { to: '/documents', label: 'Documents', icon: FileText },
   { to: '/subjects', label: 'Subjects', icon: BookOpen },
+  { to: '/upload', label: 'Upload notes', icon: Upload },
 ]
 
 const studyLinks = [

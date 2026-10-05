@@ -14,6 +14,7 @@ import PhasePlaceholder from './Pages/PhasePlaceholder.jsx'
 import Register from './Pages/Register.jsx'
 import SubjectDetails from './Pages/SubjectDetails.jsx'
 import Subjects from './Pages/Subjects.jsx'
+import UploadNotes from './Pages/UploadNotes.jsx'
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/documents/:documentId" element={<DocumentDetails />} />
-                <Route path="/upload" element={<PhasePlaceholder title="Upload notes" />} />
+                <Route path="/upload" element={<UploadNotes />} />
                 <Route path="/summary/:documentId" element={<PhasePlaceholder title="Study summary" />} />
                 <Route path="/flashcards/:documentId" element={<PhasePlaceholder title="Flashcards" />} />
                 <Route path="/quiz/:quizId" element={<PhasePlaceholder title="Quiz" />} />
