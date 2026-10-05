@@ -1,5 +1,5 @@
 export function getDataErrorMessage(error, itemName = 'data') {
-  if (error?.code === 'PGRST205' || error?.code === '42P01') {
+  if (error?.code === 'PGRST205' || error?.code === 'PGRST200' || error?.code === '42P01') {
     return 'The Supabase tables are not available yet. Apply the database migration, then refresh this page.'
   }
   if (error?.code === '23505') return 'That subject name is already in use.'

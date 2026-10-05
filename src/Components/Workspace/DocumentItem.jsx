@@ -17,7 +17,7 @@ export default function DocumentItem({ document, onDelete, compact = false }) {
       <span className="document-status" data-status={document.status}>{document.status}</span>
       <div className="document-item-actions">
         {!compact && <Link className="document-action" to={`/documents/${document.id}`} aria-label={`Open ${document.title || document.filename}`} title="Open document"><MoreHorizontal size={17} aria-hidden="true" /></Link>}
-        <button className="document-action" type="button" aria-label={`Delete ${document.title || document.filename}`} title="Delete document" onClick={() => onDelete(document)}><Trash2 size={16} aria-hidden="true" /></button>
+        {onDelete && <button className="document-action" type="button" aria-label={`Delete ${document.title || document.filename}`} title="Delete document" onClick={() => onDelete(document)}><Trash2 size={16} aria-hidden="true" /></button>}
       </div>
     </article>
   )

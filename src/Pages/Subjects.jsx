@@ -12,7 +12,7 @@ const blankSubject = { name: '', description: '', color: '#1D4ED8' }
 
 export default function Subjects() {
   const { subjects, isLoading, error, refresh } = useSubjects()
-  const { documents } = useDocuments()
+  const { documents, isLoading: documentsLoading } = useDocuments()
   const [isSaving, setIsSaving] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [editValues, setEditValues] = useState(blankSubject)
@@ -77,7 +77,7 @@ export default function Subjects() {
       </section>
       {actionError && <p className="workspace-error-banner" role="alert">{actionError}</p>}
       <SubjectForm onSubmit={handleCreate} isSaving={isSaving} />
-      {isLoading ? <div className="workspace-skeleton" aria-label="Loading subjects" /> : error ? <section className="workspace-panel"><WorkspaceError error={error} itemName="subjects" onRetry={refresh} /></section> : subjects.length ? (
+      {isLoading || documentsLoading ? <div className="workspace-skeleton" aria-label="Loading subjects" /> : error ? <section className="workspace-panel"><WorkspaceError error={error} itemName="subjects" onRetry={refresh} /></section> : subjects.length ? (
         <section className="subject-grid" aria-label="Your subjects">
           {subjects.map((subject) => {
             const documentCount = documents.filter((document) => document.subject_id === subject.id).length

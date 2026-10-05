@@ -28,7 +28,7 @@ export default function SubjectDetails() {
       </section>
       <section className="workspace-panel" aria-label={`Documents in ${subject.name}`}>
         <div className="workspace-panel-heading"><div><h2>Documents</h2><p>Course material assigned to this subject</p></div></div>
-        {subjectDocuments.length ? <div className="workspace-list">{subjectDocuments.map((document) => <DocumentItem key={document.id} document={document} onDelete={() => {}} compact />)}</div> : <WorkspaceEmpty kind="documents" title="No documents in this subject" description="When you upload notes, assign them to this subject to keep everything together." actionLabel="Upload notes" actionTo="/upload" />}
+        {subjectDocuments.length ? <div className="workspace-list">{subjectDocuments.map((document) => <DocumentItem key={document.id} document={document} compact />)}</div> : <WorkspaceEmpty kind="documents" title="No documents in this subject" description="When you upload notes, assign them to this subject to keep everything together." actionLabel="Upload notes" actionTo="/upload" />}
       </section>
     </div>
   )

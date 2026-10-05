@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState } from 'react'
 import { ArrowRight, BookOpen, FileText, Upload } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import DocumentItem from '../Components/Workspace/DocumentItem.jsx'
@@ -20,7 +20,7 @@ export default function Dashboard() {
   const { user } = useAuth()
   const { documents, isLoading: documentsLoading, error: documentsError, refresh: refreshDocuments } = useDocuments()
   const { subjects, isLoading: subjectsLoading, error: subjectsError, refresh: refreshSubjects } = useSubjects()
-  const [actionError, setActionError] = useMemo(() => [null, () => {}], [])
+  const [actionError, setActionError] = useState('')
   const fullName = user?.user_metadata?.full_name?.trim()
   const displayName = fullName || user?.email?.split('@')[0] || 'Student'
   const recentDocuments = documents.slice(0, 5)
@@ -30,6 +30,7 @@ export default function Dashboard() {
   async function handleDelete(document) {
     const confirmed = window.confirm(`Delete “${document.title || document.filename}” from your documents?`)
     if (!confirmed) return
+    setActionError('')
     try {
       await deleteDocument(document.id)
       refreshDocuments()
