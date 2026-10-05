@@ -17,6 +17,7 @@ import SubjectDetails from './Pages/SubjectDetails.jsx'
 import Subjects from './Pages/Subjects.jsx'
 
 const UploadNotes = lazy(() => import('./Pages/UploadNotes.jsx'))
+const Summary = lazy(() => import('./Pages/Summary.jsx'))
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function App() {
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/documents/:documentId" element={<DocumentDetails />} />
                 <Route path="/upload" element={<UploadNotes />} />
-                <Route path="/summary/:documentId" element={<PhasePlaceholder title="Study summary" />} />
+                <Route path="/summary/:documentId" element={<Summary />} />
                 <Route path="/flashcards/:documentId" element={<PhasePlaceholder title="Flashcards" />} />
                 <Route path="/quiz/:quizId" element={<PhasePlaceholder title="Quiz" />} />
                 <Route path="/study" element={<PhasePlaceholder title="Study mode" />} />

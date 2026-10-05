@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, FileText } from 'lucide-react'
+import { ArrowLeft, FileText, Sparkles } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { WorkspaceError, WorkspaceLoading } from '../Components/Workspace/WorkspaceState.jsx'
 import { getDocument } from '../services/documentService.js'
@@ -49,7 +49,7 @@ export default function DocumentDetails() {
             <div><dt>Type</dt><dd>{document.mime_type}</dd></div>
           </dl></section>
         </div>
-        {document.status === 'completed' && <p className="workspace-next-phase-note">Summary actions will appear when the study-material phase is available.</p>}
+        {['uploaded', 'completed'].includes(document.status) && <Link className="button document-summary-button" to={`/summary/${document.id}`}><Sparkles size={16} aria-hidden="true" /> Open study summary</Link>}
       </>}
     </div>
   )
