@@ -4,7 +4,7 @@ export async function getDocumentSummary(documentId) {
   const client = getSupabaseClient()
   const { data: summary, error } = await client
     .from('summaries')
-    .select('id, document_id, title, overview, is_bookmarked, created_at, updated_at')
+    .select('id, document_id, title, overview, key_concepts, exam_alerts, is_bookmarked, created_at, updated_at')
     .eq('document_id', documentId)
     .maybeSingle()
 
@@ -23,6 +23,8 @@ export async function getDocumentSummary(documentId) {
 
   return {
     ...summary,
+    key_concepts: summary.key_concepts ?? [],
+    exam_alerts: summary.exam_alerts ?? [],
     topics: topics.data ?? [],
     formulas: formulas.data ?? [],
     definitions: definitions.data ?? [],

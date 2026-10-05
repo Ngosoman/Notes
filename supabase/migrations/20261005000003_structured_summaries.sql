@@ -11,6 +11,12 @@ create table public.summaries (
   constraint summaries_overview_length check (char_length(overview) between 1 and 12000)
 );
 
+alter table public.summaries
+  add column key_concepts jsonb not null default '[]'::jsonb,
+  add column exam_alerts jsonb not null default '[]'::jsonb,
+  add constraint summaries_key_concepts_array check (jsonb_typeof(key_concepts) = 'array'),
+  add constraint summaries_exam_alerts_array check (jsonb_typeof(exam_alerts) = 'array');
+
 create table public.topics (
   id uuid primary key default gen_random_uuid(),
   summary_id uuid not null references public.summaries (id) on delete cascade,
@@ -140,16 +146,20 @@ begin
     raise exception 'Document owner check failed';
   end if;
 
-  insert into public.summaries (document_id, user_id, title, overview)
+  insert into public.summaries (document_id, user_id, title, overview, key_concepts, exam_alerts)
   values (
     p_document_id,
     p_user_id,
     p_summary ->> 'title',
-    p_summary ->> 'overview'
+    p_summary ->> 'overview',
+    coalesce(p_summary -> 'key_concepts', '[]'::jsonb),
+    coalesce(p_summary -> 'exam_alerts', '[]'::jsonb)
   )
   on conflict (document_id) do update
     set title = excluded.title,
         overview = excluded.overview,
+        key_concepts = excluded.key_concepts,
+        exam_alerts = excluded.exam_alerts,
         updated_at = now()
   returning id into summary_id;
 
