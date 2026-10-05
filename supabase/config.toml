@@ -3,3 +3,7 @@ project_id = "aeronotes-ai"
 [functions.process-document]
 verify_jwt = true
 entrypoint = "./functions/process-document/index.js"
+
+[functions.generate-summary]
+verify_jwt = true
+entrypoint = "./functions/generate-summary/index.js"
