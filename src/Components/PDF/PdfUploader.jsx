@@ -4,12 +4,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 import useSubjects from '../../hooks/useSubjects.js'
 import { createDocumentRecord, updateDocumentStatus } from '../../services/documentService.js'
+import { processDocument } from '../../services/processingService.js'
 import { createDocumentStoragePath, uploadPdf } from '../../services/storageService.js'
 import { formatFileSize, getDataErrorMessage } from '../../utils/dataErrors.js'
 
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024
 
-function fileValidationMessage(error) {
+function fileValidationMessage(error, objectIsStored) {
   if (error?.message?.startsWith('Supabase is not configured')) {
     return 'Supabase is not configured. Add the project URL and publishable key to your local environment.'
   }
@@ -19,8 +20,12 @@ function fileValidationMessage(error) {
   if (error?.status === 413 || String(error?.statusCode) === '413') {
     return 'This PDF exceeds the storage limit. Choose a file under 50 MB.'
   }
+  if (error?.code === 'NO_SELECTABLE_TEXT') return error.message
+  if (error?.code === 'PAGE_LIMIT_EXCEEDED' || error?.code === 'TEXT_LIMIT_EXCEEDED') return error.message
+  if (error?.code === 'FUNCTION_UNAVAILABLE') return 'The PDF was uploaded, but the text-processing function is not deployed yet.'
   if (error?.message?.includes('session has expired')) return error.message
   if (error?.code === 'PGRST205' || error?.code === '42P01') return getDataErrorMessage(error, 'your document record')
+  if (objectIsStored) return 'Your PDF is safely uploaded, but we could not finish extracting its text. Retry processing in a moment.'
   return 'Something went wrong while uploading your PDF. Please try again.'
 }
 
@@ -35,6 +40,8 @@ export default function PdfUploader() {
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState(null)
   const [documentRecord, setDocumentRecord] = useState(null)
+  const [objectIsStored, setObjectIsStored] = useState(false)
+  const [extractionResult, setExtractionResult] = useState(null)
   const [progress, setProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [isValidating, setIsValidating] = useState(false)
@@ -60,6 +67,8 @@ export default function PdfUploader() {
 
       setSelectedFile(file)
       setDocumentRecord(null)
+      setObjectIsStored(false)
+      setExtractionResult(null)
       setProgress(0)
       setUploadState('ready')
     } catch (validationError) {
@@ -89,6 +98,7 @@ export default function PdfUploader() {
     setUploadState('uploading')
 
     let record = documentRecord
+    let stored = objectIsStored
     try {
       if (!record) {
         const documentId = crypto.randomUUID()
@@ -102,23 +112,28 @@ export default function PdfUploader() {
           fileSizeBytes: selectedFile.size,
         })
         setDocumentRecord(record)
-      } else {
-        await updateDocumentStatus(record.id, 'uploading')
       }
 
-      await uploadPdf(selectedFile, record.storage_path, setProgress)
+      if (!stored) {
+        await uploadPdf(selectedFile, record.storage_path, setProgress)
+        stored = true
+        setObjectIsStored(true)
+      }
       await updateDocumentStatus(record.id, 'uploaded')
+      setUploadState('processing')
+      const result = await processDocument(record.id)
+      setExtractionResult(result)
       setUploadState('completed')
     } catch (uploadError) {
-      if (import.meta.env.DEV) console.error('PDF upload failed.', uploadError)
-      if (record) {
+      if (import.meta.env.DEV) console.error('PDF upload or text extraction failed.', uploadError)
+      if (record && !stored) {
         try {
           await updateDocumentStatus(record.id, 'failed')
         } catch (statusError) {
-          if (import.meta.env.DEV) console.error('Unable to mark the document upload as failed.', statusError)
+          if (import.meta.env.DEV) console.error('Unable to mark the document operation as failed.', statusError)
         }
       }
-      setErrorMessage(fileValidationMessage(uploadError))
+      setErrorMessage(fileValidationMessage(uploadError, stored))
       setUploadState('failed')
     }
   }
@@ -126,6 +141,8 @@ export default function PdfUploader() {
   function clearSelection() {
     setSelectedFile(null)
     setDocumentRecord(null)
+    setObjectIsStored(false)
+    setExtractionResult(null)
     setProgress(0)
     setErrorMessage('')
     setUploadState('idle')
@@ -136,8 +153,9 @@ export default function PdfUploader() {
       {uploadState === 'completed' && documentRecord ? <div className="pdf-upload-result" role="status">
         <span className="pdf-upload-result-icon"><CheckCircle2 size={22} aria-hidden="true" /></span>
         <p className="workspace-eyebrow">UPLOAD COMPLETE</p>
-        <h2>Your PDF is in your library.</h2>
+        <h2>Your PDF is ready for study materials.</h2>
         <p className="pdf-upload-result-name">{selectedFile?.name}</p>
+        {extractionResult && <p className="pdf-extraction-result">{extractionResult.pageCount} pages · {extractionResult.chunkCount} text sections prepared</p>}
         <div className="pdf-upload-result-actions">
           <button className="button" type="button" onClick={() => navigate(`/documents/${documentRecord.id}`)}>View document</button>
           <button className="button button-secondary" type="button" onClick={clearSelection}>Upload another</button>
@@ -186,8 +204,10 @@ export default function PdfUploader() {
           <progress className="pdf-progress" max="100" value={progress}>{progress}%</progress>
         </div>}
 
+        {uploadState === 'processing' && <div className="pdf-processing-state" role="status" aria-live="polite"><LoaderCircle className="auth-spinner" size={18} aria-hidden="true" /><span>Extracting text and preparing document sections…</span></div>}
+
         {selectedFile && (uploadState === 'ready' || uploadState === 'failed') && <button className="button pdf-upload-button" type="button" onClick={handleUpload}>
-          <UploadCloud size={16} aria-hidden="true" />{uploadState === 'failed' ? 'Retry upload' : 'Upload PDF'}
+          <UploadCloud size={16} aria-hidden="true" />{uploadState === 'failed' ? objectIsStored ? 'Retry text extraction' : 'Retry upload' : 'Upload PDF'}
         </button>}
       </>}
       <p className="pdf-privacy-note">Your PDF is stored privately and is only accessible from your account.</p>

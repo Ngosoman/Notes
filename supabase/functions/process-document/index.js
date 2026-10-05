@@ -29,7 +29,7 @@ function respond(body, status = 200) {
 
 function cleanPageText(value) {
   return value
-    .replace(/\u0000/g, '')
+    .replaceAll(String.fromCharCode(0), '')
     .replace(/\r\n?/g, '\n')
     .replace(/[\t ]+\n/g, '\n')
     .replace(/\n[\t ]+\n/g, '\n\n')
