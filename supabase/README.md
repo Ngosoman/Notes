@@ -10,7 +10,6 @@ supabase functions deploy generate-summary
 supabase functions deploy generate-study-set
 supabase functions deploy submit-quiz
 supabase functions deploy ask-notes
-supabase functions deploy ask-notes
 ```
 
 The summary function calls an OpenAI-compatible Chat Completions endpoint through a server-side adapter. Configure these Edge Function secrets in the Supabase project; do not add them to `.env`, Vercel `VITE_` variables, or frontend code:
@@ -33,12 +32,4 @@ Ask Your Notes uses a 1536-dimensional pgvector index. Configure a compatible em
 supabase secrets set AI_EMBEDDING_MODEL=<embedding-model-name> AI_EMBEDDING_DIMENSIONS=1536
 ```
 
-The embedding endpoint uses the same server-only `AI_API_URL` and `AI_API_KEY`. New document processing will create embeddings automatically. Documents processed before the vector migration must be reprocessed before they can be searched in Ask Your Notes. The `ask-notes` function verifies document ownership, scopes vector retrieval to the selected document IDs, and returns citations only for retrieved chunks.
-
-Ask Your Notes also needs a server-side embeddings model configured for exactly 1536 dimensions:
-
-```sh
-supabase secrets set AI_EMBEDDING_MODEL=<embedding-model-name> AI_EMBEDDING_DIMENSIONS=1536
-```
-
-The embedding request uses the same OpenAI-compatible `AI_API_URL` and `AI_API_KEY`. Never place AI credentials in frontend environment variables. The RAG migration enables pgvector, adds embeddings to extracted chunks, and constrains vector retrieval by authenticated user and selected document IDs.
+The embedding endpoint uses the same server-only `AI_API_URL` and `AI_API_KEY`. New document processing will create embeddings automatically. Documents processed before the vector migration must be reprocessed before they can be searched in Ask Your Notes. The `ask-notes` function verifies document ownership, scopes vector retrieval to the selected document IDs, and returns citations only for retrieved chunks. Never place AI credentials in frontend environment variables.

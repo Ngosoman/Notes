@@ -19,7 +19,3 @@ entrypoint = "./functions/submit-quiz/index.js"
 [functions.ask-notes]
 verify_jwt = true
 entrypoint = "./functions/ask-notes/index.js"
-
-[functions.ask-notes]
-verify_jwt = true
-entrypoint = "./functions/ask-notes/index.js"
