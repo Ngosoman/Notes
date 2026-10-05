@@ -12,10 +12,10 @@ function fileValidationMessage(error) {
   if (error?.message?.startsWith('Supabase is not configured')) {
     return 'Supabase is not configured. Add the project URL and publishable key to your local environment.'
   }
-  if (error?.status === 403 || error?.statusCode === '403') {
+  if (error?.status === 403 || String(error?.statusCode) === '403') {
     return 'Supabase denied this upload. Apply the private Storage migration and check the bucket policies.'
   }
-  if (error?.status === 413 || error?.statusCode === '413') {
+  if (error?.status === 413 || String(error?.statusCode) === '413') {
     return 'This PDF exceeds the storage limit. Choose a file under 50 MB.'
   }
   if (error?.message?.includes('session has expired')) return error.message

@@ -54,7 +54,23 @@ export async function getDocument(documentId) {
 }
 
 export async function deleteDocument(documentId) {
-  const { error } = await getSupabaseClient()
+  const client = getSupabaseClient()
+  const { data: document, error: readError } = await client
+    .from('documents')
+    .select('storage_path')
+    .eq('id', documentId)
+    .maybeSingle()
+
+  if (readError) throw readError
+  if (!document) return
+
+  const { error: storageError } = await client.storage
+    .from('documents')
+    .remove([document.storage_path])
+
+  if (storageError) throw storageError
+
+  const { error } = await client
     .from('documents')
     .delete()
     .eq('id', documentId)
