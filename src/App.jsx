@@ -9,7 +9,7 @@ function App() {
     <BrowserRouter>
       <div className="app-shell">
         <Navbar />
-        <main id="main-content">
+        <main id="main-content" className="min-h-screen">
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<PhasePlaceholder title="Log in" />} />
