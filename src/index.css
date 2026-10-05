@@ -113,3 +113,47 @@ code {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #14202b;
+  background: #f8faf9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --ink: #14202b;
+  --muted: #617079;
+  --paper: #f8faf9;
+  --white: #fff;
+  --line: #dce4e1;
+  --blue: #1d4ed8;
+  --blue-dark: #173f9f;
+  --cyan: #38bdf8;
+  --mint: #c8eee1;
+  --mono: 'DM Mono', monospace;
+  --heading: 'Manrope', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; scroll-padding-top: 90px; }
+body { min-width: 320px; min-height: 100vh; margin: 0; }
+body, button, a { font-family: 'DM Sans', sans-serif; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; }
+button { color: inherit; }
+::selection { color: var(--ink); background: var(--mint); }
+:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+#root, .app-shell { min-height: 100vh; }
+.page-container { width: min(100% - 48px, 1160px); margin-inline: auto; }
+@media (max-width: 640px) { .page-container { width: min(100% - 36px, 1160px); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
