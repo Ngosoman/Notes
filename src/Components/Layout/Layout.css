@@ -9,6 +9,9 @@
 .site-nav > a:not(.button) { color: #43525c; font-size: 13px; font-weight: 600; text-decoration: none; transition: color 160ms ease; }
 .site-nav > a:not(.button):hover { color: var(--blue); }
 .site-nav .nav-login { margin-left: 11px; }
+.nav-signout { display: inline-flex; align-items: center; gap: 7px; padding: 8px 0; color: #43525c; border: 0; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; }
+.nav-signout:hover { color: var(--blue); }
+.nav-error { position: absolute; top: 100%; right: 24px; margin: 8px 0 0; padding: 9px 12px; color: #8c3f37; border: 1px solid #f0ccc5; border-radius: 5px; background: #fff5f2; font-size: 12px; }
 .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 10px; padding: 0 20px; color: var(--white); border: 1px solid var(--blue); border-radius: 6px; background: var(--blue); box-shadow: 0 5px 12px rgba(29,78,216,.13); font-size: 14px; font-weight: 700; text-decoration: none; transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease; }
 .button:hover { transform: translateY(-1px); background: var(--blue-dark); box-shadow: 0 8px 18px rgba(29,78,216,.2); }
 .button-small { min-height: 40px; padding-inline: 15px; font-size: 13px; }
@@ -22,5 +25,6 @@
   .site-nav.is-open { display: flex; flex-direction: column; }
   .site-nav > a:not(.button) { padding: 13px 0; }
   .site-nav .nav-login { margin: 0; }
+  .site-nav .nav-signout { padding: 13px 0; }
   .site-nav .button { margin-top: 10px; }
 }

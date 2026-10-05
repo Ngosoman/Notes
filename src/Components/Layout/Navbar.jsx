@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { ArrowRight, Menu, Plane, X } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { ArrowRight, LogOut, Menu, Plane, X } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext.jsx'
 import './Layout.css'
 
 const sectionLinks = [
@@ -11,6 +13,21 @@ const sectionLinks = [
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [signOutError, setSignOutError] = useState('')
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleSignOut() {
+    setSignOutError('')
+    try {
+      await signOut()
+      setIsMenuOpen(false)
+      navigate('/', { replace: true })
+    } catch (error) {
+      if (import.meta.env.DEV) console.error('Unable to sign out.', error)
+      setSignOutError('We could not log you out. Please try again.')
+    }
+  }
 
   return (
     <header className="site-header">
@@ -31,14 +48,20 @@ export default function Navbar() {
         </button>
         <nav id="primary-navigation" className={`site-nav${isMenuOpen ? ' is-open' : ''}`} aria-label="Main navigation">
           {sectionLinks.map((link) => (
-            <Link key={link.href} to={link.href} onClick={() => setIsMenuOpen(false)}>{link.label}</Link>
+            <a key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)}>{link.label}</a>
           ))}
-          <Link className="nav-login" to="/login" onClick={() => setIsMenuOpen(false)}>Log in</Link>
-          <Link className="button button-small" to="/register" onClick={() => setIsMenuOpen(false)}>
-            Get started <ArrowRight size={15} aria-hidden="true" />
-          </Link>
+          {user ? <>
+            <Link className="nav-login" to="/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
+            <button className="nav-signout" type="button" onClick={handleSignOut}><LogOut size={15} aria-hidden="true" /> Log out</button>
+          </> : <>
+            <Link className="nav-login" to="/login" onClick={() => setIsMenuOpen(false)}>Log in</Link>
+            <Link className="button button-small" to="/register" onClick={() => setIsMenuOpen(false)}>
+              Get started <ArrowRight size={15} aria-hidden="true" />
+            </Link>
+          </>}
         </nav>
       </div>
+      {signOutError && <p className="nav-error" role="alert">{signOutError}</p>}
     </header>
   )
 }
