@@ -87,7 +87,7 @@ export default function Quiz() {
           <button className="button button-secondary" type="button" disabled={currentIndex >= questions.length - 1 || isSubmitting} onClick={() => setCurrentIndex((index) => index + 1)}>Next <ArrowRight size={15} /></button>
         </div>
         <div className="quiz-submit-bar"><p>{questions.length - answeredCount ? `${questions.length - answeredCount} unanswered` : 'All questions answered'} · Answers stay hidden until submission.</p><button className="button" type="button" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? <><LoaderCircle className="auth-spinner" size={15} /> Checking</> : <><Send size={14} /> Submit quiz</>}</button></div>
-+      </>}
-+    </div>
-+  )
-+}
+      </>}
+    </div>
+  )
+}
