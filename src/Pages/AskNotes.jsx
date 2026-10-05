@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowUp, BookOpenText, FileText, LoaderCircle, MessageSquarePlus, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { WorkspaceError, WorkspaceLoading } from '../Components/Workspace/WorkspaceState.jsx'
 import useDocuments from '../hooks/useDocuments.js'
 import { askNotes, listChatConversations, listChatMessages } from '../services/chatService.js'
 import './AskNotes.css'
