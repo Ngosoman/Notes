@@ -7,3 +7,11 @@ entrypoint = "./functions/process-document/index.js"
 [functions.generate-summary]
 verify_jwt = true
 entrypoint = "./functions/generate-summary/index.js"
+
+[functions.generate-study-set]
+verify_jwt = true
+entrypoint = "./functions/generate-study-set/index.js"
+
+[functions.submit-quiz]
+verify_jwt = true
+entrypoint = "./functions/submit-quiz/index.js"
