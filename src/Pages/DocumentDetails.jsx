@@ -40,7 +40,7 @@ export default function DocumentDetails() {
           <span className="document-status" data-status={document.status}>{document.status}</span>
         </section>
         <div className="document-detail-grid">
-          <section className="workspace-panel document-detail-body"><h2>Document source</h2><p>The PDF preview and generated study material will be available after document processing is added in the next phases.</p></section>
+          <section className="workspace-panel document-detail-body"><h2>Document source</h2><p>Private PDF preview is not available yet. Once text extraction has finished, open the study summary for source-grounded revision notes and page references.</p></section>
           <section className="workspace-panel" aria-labelledby="document-properties-heading"><div className="workspace-panel-heading"><h2 id="document-properties-heading">Properties</h2></div><dl className="document-detail-list">
             <div><dt>File name</dt><dd title={document.filename}>{document.filename}</dd></div>
             <div><dt>File size</dt><dd>{formatFileSize(document.file_size_bytes)}</dd></div>

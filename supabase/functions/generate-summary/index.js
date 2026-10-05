@@ -11,7 +11,8 @@ const MAX_CHUNK_COUNT = 1000
 const MAX_FINAL_ENTRIES = 40
 const MAX_SOURCE_PAGES = 800
 const MAX_TEXT_LENGTH = 6000
-const MAX_SUMMARY_INPUT_CHARACTERS = 4_500_000
+const MAX_SUMMARY_INPUT_CHARACTERS = 360_000
+const MAX_PARALLEL_BATCHES = 3
 
 class SummaryError extends Error {
   constructor(message, code, status = 422) {
@@ -156,21 +157,28 @@ async function generateStructuredSummary(documentTitle, chunks) {
     throw new SummaryError('The extracted page references are invalid.', 'INVALID_SOURCE_PAGES')
   }
 
-  const partialSummaries = []
+  const batches = []
   for (let offset = 0; offset < chunks.length; offset += CHUNKS_PER_BATCH) {
-    const batch = chunks.slice(offset, offset + CHUNKS_PER_BATCH)
-    const batchPages = new Set(batch.flatMap((chunk) => {
-      const pages = []
-      for (let page = chunk.page_start; page <= chunk.page_end && page - chunk.page_start <= 30; page += 1) pages.push(page)
-      return pages
+    batches.push(chunks.slice(offset, offset + CHUNKS_PER_BATCH))
+  }
+
+  const partialSummaries = []
+  for (let offset = 0; offset < batches.length; offset += MAX_PARALLEL_BATCHES) {
+    const batchResults = await Promise.all(batches.slice(offset, offset + MAX_PARALLEL_BATCHES).map(async (batch) => {
+      const batchPages = new Set(batch.flatMap((chunk) => {
+        const pages = []
+        for (let page = chunk.page_start; page <= chunk.page_end && page - chunk.page_start <= 30; page += 1) pages.push(page)
+        return pages
+      }))
+      const excerpt = batch.map((chunk) => `[Source pages ${chunk.page_start}-${chunk.page_end}]\n${chunk.content}`).join('\n\n---\n\n')
+      const partial = await completeJson({
+        systemPrompt: systemPrompt(),
+        userPrompt: `Create a concise partial study guide from this source material for "${documentTitle}". Return the required JSON shape; include only supported content.\n\n${excerpt}`,
+        maxTokens: 4500,
+      })
+      return validateSummary(partial, batchPages)
     }))
-    const excerpt = batch.map((chunk) => `[Source pages ${chunk.page_start}-${chunk.page_end}]\n${chunk.content}`).join('\n\n---\n\n')
-    const partial = await completeJson({
-      systemPrompt: systemPrompt(),
-      userPrompt: `Create a concise partial study guide from this source material for "${documentTitle}". Return the required JSON shape; include only supported content.\n\n${excerpt}`,
-      maxTokens: 4500,
-    })
-    partialSummaries.push(validateSummary(partial, batchPages))
+    partialSummaries.push(...batchResults)
   }
 
   const final = await completeJson({
