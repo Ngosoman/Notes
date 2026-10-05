@@ -63,6 +63,40 @@ create policy "Owners can read their chat messages"
     )
   );
 
+create function public.set_document_chunk_embeddings(
+  p_document_id uuid,
+  p_user_id uuid,
+  p_embeddings jsonb
+)
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  updated_count integer;
+  requested_count integer;
+begin
+  if not exists (select 1 from public.documents where id = p_document_id and user_id = p_user_id) then
+    raise exception 'Document owner check failed';
+  end if;
+
+  select count(*) into requested_count from jsonb_array_elements(p_embeddings);
+  update public.document_chunks as chunk
+  set embedding = item.embedding::extensions.vector
+  from jsonb_to_recordset(p_embeddings) as item(chunk_index integer, embedding text)
+  where chunk.document_id = p_document_id
+    and chunk.user_id = p_user_id
+    and chunk.chunk_index = item.chunk_index;
+
+  get diagnostics updated_count = row_count;
+  if updated_count <> requested_count then
+    raise exception 'Embedding count did not match the stored chunk count';
+  end if;
+  return updated_count;
+end;
+$$;
+
 create function public.match_document_chunks(
   p_query_embedding extensions.vector(1536),
   p_user_id uuid,
@@ -100,4 +134,6 @@ as $$
 $$;
 
 revoke all on function public.match_document_chunks(extensions.vector, uuid, uuid[], integer) from public, anon, authenticated;
+revoke all on function public.set_document_chunk_embeddings(uuid, uuid, jsonb) from public, anon, authenticated;
 grant execute on function public.match_document_chunks(extensions.vector, uuid, uuid[], integer) to service_role;
+grant execute on function public.set_document_chunk_embeddings(uuid, uuid, jsonb) to service_role;

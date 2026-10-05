@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { extractText, getDocumentProxy } from 'npm:unpdf@1.8.1'
+import { embedTexts } from '../_shared/aiProvider.js'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -198,12 +199,27 @@ Deno.serve(async (request) => {
 
     const { pageCount, pageTexts } = await extractPdfPages(pdfBlob)
     const chunks = createChunks(pageTexts)
+    const embeddings = []
+    for (let offset = 0; offset < chunks.length; offset += 64) {
+      embeddings.push(...await embedTexts(chunks.slice(offset, offset + 64).map((chunk) => chunk.content)))
+    }
+
     const { error: chunksError } = await serviceClient.rpc('replace_document_chunks', {
       p_document_id: document.id,
       p_user_id: user.id,
       p_chunks: chunks,
     })
     if (chunksError) throw chunksError
+
+    const { error: embeddingsError } = await serviceClient.rpc('set_document_chunk_embeddings', {
+      p_document_id: document.id,
+      p_user_id: user.id,
+      p_embeddings: embeddings.map((embedding, index) => ({
+        chunk_index: index,
+        embedding: `[${embedding.join(',')}]`,
+      })),
+    })
+    if (embeddingsError) throw embeddingsError
 
     const { error: completeError } = await serviceClient
       .from('documents')
