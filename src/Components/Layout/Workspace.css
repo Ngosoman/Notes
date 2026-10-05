@@ -1,4 +1,5 @@
 .workspace-shell { min-height: 100vh; background: #f6f8f7; }
+.workspace-route-loading { display: grid; min-height: 100vh; place-items: center; color: #617079; font-size: 13px; }
 .workspace-sidebar { position: fixed; z-index: 20; inset: 0 auto 0 0; display: flex; width: 252px; flex-direction: column; padding: 25px 16px 15px; border-right: 1px solid #e0e6e3; background: #fff; }
 .sidebar-brand-row { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
 .sidebar-brand-row .brand-name { font-size: 16px; }

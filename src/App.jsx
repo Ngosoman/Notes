@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './Components/Auth/ProtectedRoute.jsx'
 import PublicLayout from './Components/Layout/PublicLayout.jsx'
@@ -14,13 +15,15 @@ import PhasePlaceholder from './Pages/PhasePlaceholder.jsx'
 import Register from './Pages/Register.jsx'
 import SubjectDetails from './Pages/SubjectDetails.jsx'
 import Subjects from './Pages/Subjects.jsx'
-import UploadNotes from './Pages/UploadNotes.jsx'
+
+const UploadNotes = lazy(() => import('./Pages/UploadNotes.jsx'))
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <div className="app-shell">
+          <Suspense fallback={<div className="workspace-route-loading" role="status">Preparing workspace…</div>}>
           <Routes>
             <Route element={<PublicLayout />}>
               <Route path="/" element={<Landing />} />
@@ -46,6 +49,7 @@ function App() {
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </div>
       </AuthProvider>
     </BrowserRouter>

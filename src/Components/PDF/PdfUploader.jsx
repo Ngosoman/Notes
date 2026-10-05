@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { AlertCircle, CheckCircle2, FileText, LoaderCircle, Trash2, UploadCloud } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
+import useSubjects from '../../hooks/useSubjects.js'
 import { createDocumentRecord, updateDocumentStatus } from '../../services/documentService.js'
 import { createDocumentStoragePath, uploadPdf } from '../../services/storageService.js'
 import { formatFileSize, getDataErrorMessage } from '../../utils/dataErrors.js'
@@ -30,6 +31,7 @@ function getTitle(filename) {
 export default function PdfUploader() {
   const inputRef = useRef(null)
   const { user } = useAuth()
+  const { subjects, isLoading: subjectsLoading, error: subjectsError } = useSubjects()
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState(null)
   const [documentRecord, setDocumentRecord] = useState(null)
@@ -38,6 +40,7 @@ export default function PdfUploader() {
   const [isValidating, setIsValidating] = useState(false)
   const [uploadState, setUploadState] = useState('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [selectedSubjectId, setSelectedSubjectId] = useState('')
 
   async function selectFile(file) {
     if (!file) return
@@ -91,6 +94,7 @@ export default function PdfUploader() {
         const storagePath = createDocumentStoragePath(user.id, documentId, selectedFile.name)
         record = await createDocumentRecord({
           id: documentId,
+          subjectId: selectedSubjectId,
           title: getTitle(selectedFile.name),
           filename: selectedFile.name,
           storagePath,
@@ -165,6 +169,16 @@ export default function PdfUploader() {
         </div>
 
         {errorMessage && <p className="pdf-upload-error" role="alert"><AlertCircle size={16} aria-hidden="true" />{errorMessage}</p>}
+
+        {subjectsError && <p className="pdf-upload-note" role="status">Subjects could not be loaded. This PDF will be left uncategorized.</p>}
+
+        {selectedFile && <div className="pdf-subject-field">
+          <label htmlFor="upload-subject">Subject <span>(optional)</span></label>
+          <select id="upload-subject" className="workspace-select" value={selectedSubjectId} onChange={(event) => setSelectedSubjectId(event.target.value)} disabled={subjectsLoading || uploadState === 'uploading' || Boolean(documentRecord)}>
+            <option value="">No subject</option>
+            {subjects.map((subject) => <option value={subject.id} key={subject.id}>{subject.name}</option>)}
+          </select>
+        </div>}
 
         {uploadState === 'uploading' && <div className="pdf-progress-area" role="status" aria-live="polite">
           <div className="pdf-progress-label"><span>Uploading to private storage</span><strong>{progress}%</strong></div>

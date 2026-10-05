@@ -15,6 +15,10 @@
 .pdf-selected-file-info small { color: #849197; font-size: 10px; }
 .pdf-dropzone .document-action { flex: 0 0 auto; }
 .pdf-upload-button { width: 100%; min-height: 44px; margin-top: 15px; }
+.pdf-subject-field { display: grid; gap: 7px; margin-top: 15px; }
+.pdf-subject-field label { color: #53626a; font-size: 10px; font-weight: 700; }
+.pdf-subject-field label span { color: #849197; font-weight: 400; }
+.pdf-upload-note { margin: 12px 0 0; color: #80642f; font-size: 10px; line-height: 1.5; }
 .pdf-upload-error { display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 0; padding: 11px 12px; color: #8a463c; border: 1px solid #efd2cc; border-radius: 5px; background: #fff6f3; font-size: 11px; line-height: 1.55; }
 .pdf-upload-error svg { flex: 0 0 auto; margin-top: 1px; }
 .pdf-progress-area { margin-top: 18px; }
