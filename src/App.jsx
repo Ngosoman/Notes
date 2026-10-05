@@ -15,12 +15,12 @@ import PhasePlaceholder from './Pages/PhasePlaceholder.jsx'
 import Register from './Pages/Register.jsx'
 import SubjectDetails from './Pages/SubjectDetails.jsx'
 import Subjects from './Pages/Subjects.jsx'
-import Quiz from './Pages/Quiz.jsx'
-import StudyMode from './Pages/StudyMode.jsx'
 
 const UploadNotes = lazy(() => import('./Pages/UploadNotes.jsx'))
 const Summary = lazy(() => import('./Pages/Summary.jsx'))
 const Flashcards = lazy(() => import('./Pages/Flashcards.jsx'))
+const Quiz = lazy(() => import('./Pages/Quiz.jsx'))
+const StudyMode = lazy(() => import('./Pages/StudyMode.jsx'))
 
 function App() {
   return (

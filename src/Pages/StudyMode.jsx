@@ -75,7 +75,7 @@ export default function StudyMode() {
         <span className="study-session-icon"><Clock3 size={21} aria-hidden="true" /></span>
         <h2>Study at your own pace.</h2>
         <p>Your session is being timed. Open the saved summary, review the material, then finish here to record the session duration.</p>
-        <div className="study-session-actions"><Link className="button button-secondary" to={`/summary/${documentId}`}>Open summary <ArrowRight size={14} /></Link><button className="button" type="button" onClick={finishSession} disabled={isStarting}>{isStarting ? 'Saving…' : 'Finish session'}</button></div>
+        <div className="study-session-actions"><Link className="button button-secondary" to={`/summary/${documentId}`} target="_blank" rel="noreferrer">Open summary in new tab <ArrowRight size={14} /></Link><button className="button" type="button" onClick={finishSession} disabled={isStarting}>{isStarting ? 'Saving…' : 'Finish session'}</button></div>
       </section>
     </div>
   }
