@@ -1,5 +1,5 @@
 import AuthLayout from '../Components/Auth/AuthLayout.jsx'
-import { LoginForm } from '../Components/Auth/AuthForms.jsx'
+import LoginForm from '../Components/Auth/LoginForm.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 import { Navigate, Link } from 'react-router-dom'
 import '../Components/Auth/Auth.css'

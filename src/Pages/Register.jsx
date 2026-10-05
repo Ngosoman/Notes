@@ -1,6 +1,6 @@
 import { Navigate, Link } from 'react-router-dom'
 import AuthLayout from '../Components/Auth/AuthLayout.jsx'
-import { RegisterForm } from '../Components/Auth/AuthForms.jsx'
+import RegisterForm from '../Components/Auth/RegisterForm.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 import '../Components/Auth/Auth.css'
 

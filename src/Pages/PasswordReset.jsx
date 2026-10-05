@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import AuthLayout from '../Components/Auth/AuthLayout.jsx'
-import { PasswordResetForm } from '../Components/Auth/AuthForms.jsx'
+import PasswordResetForm from '../Components/Auth/PasswordResetForm.jsx'
 import { useAuth } from '../hooks/useAuth.js'
 import '../Components/Auth/Auth.css'
 
