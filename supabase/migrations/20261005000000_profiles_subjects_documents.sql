@@ -19,7 +19,7 @@ create table public.subjects (
   color text not null default '#1D4ED8',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint subjects_name_length check (char_length(btrim(name)) between 1 and 100),
+  constraint subjects_name_length check (name = btrim(name) and char_length(name) between 1 and 100),
   constraint subjects_description_length check (char_length(description) <= 500),
   constraint subjects_color_format check (color ~ '^#[0-9A-Fa-f]{6}$')
 );
@@ -135,7 +135,9 @@ alter table public.subjects enable row level security;
 alter table public.documents enable row level security;
 
 revoke all on public.profiles, public.subjects, public.documents from anon;
-grant select, insert, update on public.profiles to authenticated;
+grant select on public.profiles to authenticated;
+grant insert (id, full_name, institution, course) on public.profiles to authenticated;
+grant update (full_name, institution, course) on public.profiles to authenticated;
 grant select, insert, update, delete on public.subjects to authenticated;
 grant select, insert, update, delete on public.documents to authenticated;
 
