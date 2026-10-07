@@ -13,18 +13,10 @@ export async function listFlashcards(documentId) {
 
 export async function updateFlashcardReview(card) {
   const { data, error } = await getSupabaseClient()
-    .from('flashcards')
-    .update({
-      review_state: card.review_state,
-      review_count: card.review_count + 1,
-      last_reviewed_at: new Date().toISOString(),
-    })
-    .eq('id', card.id)
-    .select('id, review_state, review_count, last_reviewed_at')
-    .single()
+    .rpc('record_flashcard_review', { p_flashcard_id: card.id, p_review_state: card.review_state })
 
   if (error) throw error
-  return data
+  return Array.isArray(data) ? data[0] : data
 }
 
 export async function generateStudySet({ documentId, type, difficulty = 'medium', count }) {
@@ -64,34 +56,24 @@ export async function submitQuiz({ quizId, answers, durationSeconds }) {
 
 export async function startStudySession({ documentId, subjectId, sessionType }) {
   const { data, error } = await getSupabaseClient()
-    .from('study_sessions')
-    .insert({
-      document_id: documentId || null,
-      subject_id: subjectId || null,
-      session_type: sessionType,
+    .rpc('start_study_session', {
+      p_document_id: documentId || null,
+      p_subject_id: subjectId || null,
+      p_session_type: sessionType,
     })
-    .select('id, started_at')
-    .single()
   if (error) throw error
-  return data
+  return Array.isArray(data) ? data[0] : data
 }
 
-export async function finishStudySession({ sessionId, startedAt, questionsAnswered = 0, correctAnswers = 0, flashcardsReviewed = 0 }) {
-  const endedAt = new Date()
-  const startedAtTime = new Date(startedAt).getTime()
-  const durationSeconds = Number.isFinite(startedAtTime) ? Math.max(0, Math.floor((endedAt.getTime() - startedAtTime) / 1000)) : 0
-  const { error } = await getSupabaseClient()
-    .from('study_sessions')
-    .update({
-      ended_at: endedAt.toISOString(),
-      duration_seconds: durationSeconds,
-      questions_answered: questionsAnswered,
-      correct_answers: correctAnswers,
-      flashcards_reviewed: flashcardsReviewed,
-    })
-    .eq('id', sessionId)
+export async function finishStudySession({ sessionId, questionsAnswered = 0, correctAnswers = 0, flashcardsReviewed = 0 }) {
+  const { data, error } = await getSupabaseClient().rpc('finish_study_session', {
+    p_session_id: sessionId,
+    p_questions_answered: questionsAnswered,
+    p_correct_answers: correctAnswers,
+    p_flashcards_reviewed: flashcardsReviewed,
+  })
   if (error) throw error
-  return durationSeconds
+  return Number(data) || 0
 }
 
 async function readFunctionError(error, fallbackMessage) {
