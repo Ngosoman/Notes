@@ -5,6 +5,7 @@ import PublicLayout from './Components/Layout/PublicLayout.jsx'
 import WorkspaceLayout from './Components/Layout/WorkspaceLayout.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import Dashboard from './Pages/Dashboard.jsx'
+import Analytics from './Pages/Analytics.jsx'
 import DocumentDetails from './Pages/DocumentDetails.jsx'
 import Documents from './Pages/Documents.jsx'
 import Landing from './Pages/Landing.jsx'
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/flashcards/:documentId" element={<Flashcards />} />
                 <Route path="/quiz/:quizId" element={<Quiz />} />
                 <Route path="/study" element={<StudyMode />} />
+                <Route path="/analytics" element={<Analytics />} />
                 <Route path="/ask" element={<AskNotes />} />
                 <Route path="/subjects" element={<Subjects />} />
                 <Route path="/subjects/:subjectId" element={<SubjectDetails />} />
