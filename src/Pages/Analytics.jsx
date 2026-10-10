@@ -61,31 +61,38 @@ export default function Analytics() {
 
   return <div className="workspace-content analytics-page">
     <section className="workspace-page-heading"><div><p className="workspace-eyebrow">YOUR STUDY DESK / ANALYTICS</p><h1>Study analytics</h1><p>Activity and results from your saved study sessions and quiz attempts.</p></div></section>
-    {result.isLoading ? <div className="workspace-skeleton" aria-label="Loading study analytics" /> : result.error ? <section className="workspace-panel"><WorkspaceError error={result.error} itemName="study analytics" onRetry={retry} /></section> : !hasActivity ? <section className="workspace-panel"><div className="workspace-state"><span className="workspace-state-icon"><Activity size={20} aria-hidden="true" /></span><h3>Your analytics will grow with your study activity</h3><p>Finish a timed study session, review flashcards, or submit a quiz to see real progress here.</p></div></section> : <>
-      <p className="analytics-period-note">Recent activity: past {data.days} days · Flashcard review total is lifetime.</p>
-      <section className="analytics-stats" aria-label="Study metrics">
-        <Stat icon={Clock3} label="Study time" value={formatDuration(data.total_study_seconds)} detail={`Across ${data.total_sessions} completed sessions`} />
-        <Stat icon={FileQuestion} label="Quizzes completed" value={data.quizzes_completed} detail={`Past ${data.days} days`} />
-        <Stat icon={Target} label="Average quiz score" value={data.average_quiz_score == null ? '—' : `${Number(data.average_quiz_score).toFixed(1)}%`} detail="Mean of saved attempts" />
-        <Stat icon={BrainCircuit} label="Flashcards reviewed" value={data.flashcards_reviewed} detail="Lifetime review count" />
-      </section>
-
-      <div className="analytics-grid">
-        <section className="workspace-panel analytics-panel" aria-labelledby="activity-heading">
-          <div className="workspace-panel-heading"><div><h2 id="activity-heading">Daily study activity</h2><p>Completed sessions over the past 7 days</p></div><Activity size={16} aria-hidden="true" /></div>
-          <ActivityChart days={data.daily_activity || []} />
+    {result.isLoading ? (
+      <div className="workspace-skeleton" aria-label="Loading study analytics" />
+    ) : result.error ? (
+      <section className="workspace-panel"><WorkspaceError error={result.error} itemName="study analytics" onRetry={retry} /></section>
+    ) : !hasActivity ? (
+      <section className="workspace-panel"><div className="workspace-state"><span className="workspace-state-icon"><Activity size={20} aria-hidden="true" /></span><h3>Your analytics will grow with your study activity</h3><p>Finish a timed study session, review flashcards, or submit a quiz to see real progress here.</p></div></section>
+    ) : (
+      <>
+        <p className="analytics-period-note">Recent activity: past {data.days} days · Flashcard review total is lifetime.</p>
+        <section className="analytics-stats" aria-label="Study metrics">
+          <Stat icon={Clock3} label="Study time" value={formatDuration(data.total_study_seconds)} detail={`Across ${data.total_sessions} completed sessions`} />
+          <Stat icon={FileQuestion} label="Quizzes completed" value={data.quizzes_completed} detail={`Past ${data.days} days`} />
+          <Stat icon={Target} label="Average quiz score" value={data.average_quiz_score == null ? '—' : `${Number(data.average_quiz_score).toFixed(1)}%`} detail="Mean of saved attempts" />
+          <Stat icon={BrainCircuit} label="Flashcards reviewed" value={data.flashcards_reviewed} detail="Lifetime review count" />
         </section>
-        <section className="workspace-panel analytics-panel" aria-labelledby="subject-heading">
-          <div className="workspace-panel-heading"><div><h2 id="subject-heading">Most studied subject</h2><p>Based on completed session time</p></div><BookOpenCheck size={16} aria-hidden="true" /></div>
-          {data.most_studied_subject ? <div className="analytics-subject"><span style={{ backgroundColor: data.most_studied_subject.color }} /><div><strong>{data.most_studied_subject.name}</strong><small>{formatDuration(data.most_studied_subject.duration_seconds)} logged</small></div></div> : <p className="analytics-panel-empty">No subject-linked study sessions yet.</p>}
-        </section>
-      </div>
 
-      <section className="workspace-panel weak-topics-panel" aria-labelledby="weak-topics-heading">
-        <div className="workspace-panel-heading"><div><h2 id="weak-topics-heading">Topics to revisit</h2><p>Topics missed across your saved quiz attempts</p></div><Target size={16} aria-hidden="true" /></div>
-        {data.weak_topics?.length ? <ol className="weak-topic-list">{data.weak_topics.map((topic, index) => <li key={topic.name}><span>{String(index + 1).padStart(2, '0')}</span><strong>{topic.name}</strong><small>{topic.misses} missed</small></li>)}</ol> : <p className="analytics-panel-empty">No weak-topic data yet. Take a quiz to see topics to revisit.</p>}
-      </section>
-      </>}
-    </div>
-  )
+        <div className="analytics-grid">
+          <section className="workspace-panel analytics-panel" aria-labelledby="activity-heading">
+            <div className="workspace-panel-heading"><div><h2 id="activity-heading">Daily study activity</h2><p>Completed sessions over the past 7 days</p></div><Activity size={16} aria-hidden="true" /></div>
+            <ActivityChart days={data.daily_activity || []} />
+          </section>
+          <section className="workspace-panel analytics-panel" aria-labelledby="subject-heading">
+            <div className="workspace-panel-heading"><div><h2 id="subject-heading">Most studied subject</h2><p>Based on completed session time</p></div><BookOpenCheck size={16} aria-hidden="true" /></div>
+            {data.most_studied_subject ? <div className="analytics-subject"><span style={{ backgroundColor: data.most_studied_subject.color }} /><div><strong>{data.most_studied_subject.name}</strong><small>{formatDuration(data.most_studied_subject.duration_seconds)} logged</small></div></div> : <p className="analytics-panel-empty">No subject-linked study sessions yet.</p>}
+          </section>
+        </div>
+
+        <section className="workspace-panel weak-topics-panel" aria-labelledby="weak-topics-heading">
+          <div className="workspace-panel-heading"><div><h2 id="weak-topics-heading">Topics to revisit</h2><p>Topics missed across your saved quiz attempts</p></div><Target size={16} aria-hidden="true" /></div>
+          {data.weak_topics?.length ? <ol className="weak-topic-list">{data.weak_topics.map((topic, index) => <li key={topic.name}><span>{String(index + 1).padStart(2, '0')}</span><strong>{topic.name}</strong><small>{topic.misses} missed</small></li>)}</ol> : <p className="analytics-panel-empty">No weak-topic data yet. Take a quiz to see topics to revisit.</p>}
+        </section>
+      </>
+    )}
+  </div>
 }
