@@ -25,10 +25,11 @@ function fileValidationMessage(error, objectIsStored) {
   if (error?.code === 'EMBEDDINGS_NOT_CONFIGURED') return 'Your PDF is stored, but text processing needs AI embedding settings. Configure AI_API_URL, AI_API_KEY, and AI_EMBEDDING_MODEL as Supabase Edge Function secrets, then retry text extraction.'
   if (error?.code === 'EMBEDDING_DIMENSIONS_MISMATCH') return 'The configured embedding model must return 1536 dimensions. Update AI_EMBEDDING_DIMENSIONS and use a compatible model, then retry text extraction.'
   if (error?.code === 'EMBEDDING_PROVIDER_ERROR' || error?.code === 'EMBEDDING_UNAVAILABLE') return 'Your PDF is stored, but the AI embedding provider rejected the request or could not be reached. Check the server-side provider settings, then retry text extraction.'
+  if (error?.code === 'EXTRACTION_FAILED') return 'Your PDF is stored, but the processing function failed. Configure the required AI embedding secrets and check the process-document function logs if this continues.'
   if (error?.code === 'FUNCTION_UNAVAILABLE') return 'The PDF was uploaded, but the text-processing function is not deployed yet.'
   if (error?.message?.includes('session has expired')) return error.message
   if (error?.code === 'PGRST205' || error?.code === '42P01') return getDataErrorMessage(error, 'your document record')
-  if (objectIsStored) return 'Your PDF is safely uploaded, but we could not finish extracting its text. Retry processing in a moment.'
+  if (objectIsStored) return 'Your PDF is safely uploaded, but text processing failed. Check the AI embedding settings and function logs before retrying.'
   return 'Something went wrong while uploading your PDF. Please try again.'
 }
 
