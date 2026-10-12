@@ -48,3 +48,13 @@ export async function updatePassword(password) {
   if (error) throw error
   return data
 }
+
+export async function updateAccountName(fullName) {
+  const client = getSupabaseClient()
+  const { data, error } = await client.auth.updateUser({
+    data: { full_name: fullName.trim() },
+  })
+
+  if (error) throw error
+  return data.user
+}

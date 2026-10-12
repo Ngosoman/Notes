@@ -12,7 +12,7 @@ import Landing from './Pages/Landing.jsx'
 import Login from './Pages/Login.jsx'
 import NotFound from './Pages/NotFound.jsx'
 import PasswordReset from './Pages/PasswordReset.jsx'
-import PhasePlaceholder from './Pages/PhasePlaceholder.jsx'
+import Profile from './Pages/Profile.jsx'
 import Register from './Pages/Register.jsx'
 import SubjectDetails from './Pages/SubjectDetails.jsx'
 import Subjects from './Pages/Subjects.jsx'
@@ -51,7 +51,7 @@ function App() {
                 <Route path="/ask" element={<AskNotes />} />
                 <Route path="/subjects" element={<Subjects />} />
                 <Route path="/subjects/:subjectId" element={<SubjectDetails />} />
-                <Route path="/profile" element={<PhasePlaceholder title="Your profile" />} />
+                <Route path="/profile" element={<Profile />} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />

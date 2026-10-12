@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, FileText, Sparkles } from 'lucide-react'
+import { ArrowLeft, ExternalLink, FileText, RefreshCw, Sparkles } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { WorkspaceError, WorkspaceLoading } from '../Components/Workspace/WorkspaceState.jsx'
 import { getDocument } from '../services/documentService.js'
+import { createDocumentPreviewUrl } from '../services/storageService.js'
 import { formatDate, formatFileSize } from '../utils/dataErrors.js'
 
 export default function DocumentDetails() {
   const { documentId } = useParams()
   const [result, setResult] = useState({ documentId: null, document: null, isLoading: true, error: null })
   const [reloadToken, setReloadToken] = useState(0)
+  const [previewRetryToken, setPreviewRetryToken] = useState(0)
+  const [preview, setPreview] = useState({ storagePath: '', url: '', isLoading: true, error: null })
 
   useEffect(() => {
     let isActive = true
@@ -26,6 +29,24 @@ export default function DocumentDetails() {
   const document = isCurrentRequest ? result.document : null
   const error = isCurrentRequest ? result.error : null
 
+  useEffect(() => {
+    if (!document?.storage_path) return undefined
+    let isActive = true
+    const storagePath = document.storage_path
+    createDocumentPreviewUrl(storagePath)
+      .then((url) => { if (isActive) setPreview({ storagePath, url, isLoading: false, error: null }) })
+      .catch((previewError) => {
+        if (import.meta.env.DEV) console.error('Unable to create a private PDF preview.', previewError)
+        if (isActive) setPreview({ storagePath, url: '', isLoading: false, error: previewError })
+      })
+    return () => { isActive = false }
+  }, [document?.storage_path, previewRetryToken])
+
+  const previewMatchesDocument = preview.storagePath === document?.storage_path
+  const previewUrl = previewMatchesDocument ? preview.url : ''
+  const previewLoading = !previewMatchesDocument || preview.isLoading
+  const previewError = previewMatchesDocument ? preview.error : null
+
   function retry() {
     setResult({ documentId, document: null, isLoading: true, error: null })
     setReloadToken((token) => token + 1)
@@ -40,7 +61,13 @@ export default function DocumentDetails() {
           <span className="document-status" data-status={document.status}>{document.status}</span>
         </section>
         <div className="document-detail-grid">
-          <section className="workspace-panel document-detail-body"><h2>Document source</h2><p>Private PDF preview is not available yet. Once text extraction has finished, open the study summary for source-grounded revision notes and page references.</p></section>
+          <section className="workspace-panel document-preview-panel" aria-labelledby="document-preview-heading">
+            <div className="workspace-panel-heading">
+              <div><h2 id="document-preview-heading">Original PDF</h2><p>Private preview link expires after five minutes.</p></div>
+              {previewUrl && <a className="workspace-text-link" href={previewUrl} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true" /> Open PDF</a>}
+            </div>
+            {previewLoading ? <WorkspaceLoading label="Loading private PDF preview" /> : previewError ? <div className="document-preview-error" role="alert"><p>We couldn’t create a private preview. Check that the database and private documents Storage migrations are applied, then try again.</p><button className="button button-secondary" type="button" onClick={() => { setPreview({ storagePath: document.storage_path, url: '', isLoading: true, error: null }); setPreviewRetryToken((token) => token + 1) }}><RefreshCw size={14} aria-hidden="true" /> Retry preview</button></div> : <iframe className="document-preview-frame" src={previewUrl} title={`PDF preview: ${document.filename}`} />}
+          </section>
           <section className="workspace-panel" aria-labelledby="document-properties-heading"><div className="workspace-panel-heading"><h2 id="document-properties-heading">Properties</h2></div><dl className="document-detail-list">
             <div><dt>File name</dt><dd title={document.filename}>{document.filename}</dd></div>
             <div><dt>File size</dt><dd>{formatFileSize(document.file_size_bytes)}</dd></div>

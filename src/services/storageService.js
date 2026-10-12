@@ -16,6 +16,16 @@ export function createDocumentStoragePath(userId, documentId, filename) {
   return `${userId}/${documentId}/${safeStorageFilename(filename)}`
 }
 
+export async function createDocumentPreviewUrl(storagePath) {
+  const { data, error } = await getSupabaseClient()
+    .storage
+    .from('documents')
+    .createSignedUrl(storagePath, 300)
+
+  if (error) throw error
+  return data.signedUrl
+}
+
 export async function uploadPdf(file, storagePath, onProgress) {
   if (!supabaseUrl || !supabasePublicKey) {
     throw new Error('Supabase Storage is not configured.')
