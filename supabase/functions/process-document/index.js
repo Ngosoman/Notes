@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { extractText, getDocumentProxy } from 'npm:unpdf@1.8.1'
-import { embedTexts } from '../_shared/aiProvider.js'
+import { AiProviderError, embedTexts } from '../_shared/aiProvider.js'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -244,6 +244,9 @@ Deno.serve(async (request) => {
     if (statusError) console.error('Unable to mark document processing as failed.', statusError)
 
     if (error instanceof ProcessingError) {
+      return respond({ error: error.message, code: error.code }, error.status)
+    }
+    if (error instanceof AiProviderError) {
       return respond({ error: error.message, code: error.code }, error.status)
     }
     return respond({ error: 'Something went wrong while extracting text from this PDF.', code: 'EXTRACTION_FAILED' }, 500)

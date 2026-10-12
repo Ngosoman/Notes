@@ -1,8 +1,5 @@
 # Supabase deployment
 
-From the repository root, link the Supabase project and apply migrations before deploying the Edge Functions:
-# Supabase deployment
-
 Complete the project creation and local `.env.local` setup in the root [README](../README.md) first. From the repository root, link the project and apply migrations before deploying Edge Functions:
 
 ```sh
@@ -18,10 +15,11 @@ npx supabase functions deploy ask-notes
 
 The migrations configure the database tables, row-level security, and private `documents` Storage bucket. Function deployment is needed for document processing and AI-powered features; it is not needed just to register, sign in, and use subjects.
 
-The summary function calls an OpenAI-compatible Chat Completions endpoint through a server-side adapter. To use summaries, flashcards, quizzes, and Ask Your Notes, configure these Edge Function secrets in the Supabase project; do not add them to `.env.local`, Vercel `VITE_` variables, or frontend code:
+The summary function calls an OpenAI-compatible Chat Completions endpoint through a server-side adapter. To use PDF text processing, summaries, flashcards, quizzes, and Ask Your Notes, configure these Edge Function secrets in the Supabase project; do not add them to `.env.local`, Vercel `VITE_` variables, or frontend code:
 
 ```sh
 npx supabase secrets set AI_API_URL=https://your-provider.example/v1 AI_API_KEY=your-provider-secret AI_MODEL=your-model-name
+npx supabase secrets set AI_EMBEDDING_MODEL=your-embedding-model AI_EMBEDDING_DIMENSIONS=1536
 ```
 
 `AI_API_URL` is the provider API base URL; the adapter appends `/chat/completions` unless the URL already ends with that path. Use the provider's server-side secret key. The browser invokes `generate-summary` with its authenticated session; only the Edge Function reads the AI key.
@@ -32,12 +30,4 @@ The study tools migration creates flashcards, quizzes, quiz questions, private q
 
 Study-set generation uses the same server-only `AI_API_URL`, `AI_API_KEY`, and `AI_MODEL` secrets. Quiz attempts and quiz study time are graded and recorded server-side; flashcard review state and quick/deep study session duration are saved for the signed-in owner.
 
-Ask Your Notes uses a 1536-dimensional pgvector index. Configure a compatible embedding model as an Edge Function secret:
-
-```sh
-```sh
-npx supabase secrets set AI_EMBEDDING_MODEL=your-embedding-model AI_EMBEDDING_DIMENSIONS=1536
-```
-```
-
-The embedding endpoint uses the same server-only `AI_API_URL` and `AI_API_KEY`. New document processing will create embeddings automatically. Documents processed before the vector migration must be reprocessed before they can be searched in Ask Your Notes. The `ask-notes` function verifies document ownership, scopes vector retrieval to the selected document IDs, and returns citations only for retrieved chunks. Never place AI credentials in frontend environment variables.
+The embedding endpoint uses the same server-only `AI_API_URL` and `AI_API_KEY`, and the configured model must support 1536-dimensional embeddings. New document processing creates embeddings automatically. Documents processed before the vector migration must be reprocessed before they can be searched in Ask Your Notes. The `ask-notes` function verifies document ownership, scopes vector retrieval to the selected document IDs, and returns citations only for retrieved chunks. Never place AI credentials in frontend environment variables.
