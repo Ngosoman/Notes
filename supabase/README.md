@@ -1,21 +1,27 @@
 # Supabase deployment
 
 From the repository root, link the Supabase project and apply migrations before deploying the Edge Functions:
+# Supabase deployment
+
+Complete the project creation and local `.env.local` setup in the root [README](../README.md) first. From the repository root, link the project and apply migrations before deploying Edge Functions:
 
 ```sh
-supabase link --project-ref <project-ref>
-supabase db push
-supabase functions deploy process-document
-supabase functions deploy generate-summary
-supabase functions deploy generate-study-set
-supabase functions deploy submit-quiz
-supabase functions deploy ask-notes
+npx supabase login
+npx supabase link --project-ref your-project-ref
+npx supabase db push
+npx supabase functions deploy process-document
+npx supabase functions deploy generate-summary
+npx supabase functions deploy generate-study-set
+npx supabase functions deploy submit-quiz
+npx supabase functions deploy ask-notes
 ```
 
-The summary function calls an OpenAI-compatible Chat Completions endpoint through a server-side adapter. Configure these Edge Function secrets in the Supabase project; do not add them to `.env`, Vercel `VITE_` variables, or frontend code:
+The migrations configure the database tables, row-level security, and private `documents` Storage bucket. Function deployment is needed for document processing and AI-powered features; it is not needed just to register, sign in, and use subjects.
+
+The summary function calls an OpenAI-compatible Chat Completions endpoint through a server-side adapter. To use summaries, flashcards, quizzes, and Ask Your Notes, configure these Edge Function secrets in the Supabase project; do not add them to `.env.local`, Vercel `VITE_` variables, or frontend code:
 
 ```sh
-supabase secrets set AI_API_URL=https://your-provider.example/v1 AI_API_KEY=<provider-secret> AI_MODEL=<model-name>
+npx supabase secrets set AI_API_URL=https://your-provider.example/v1 AI_API_KEY=your-provider-secret AI_MODEL=your-model-name
 ```
 
 `AI_API_URL` is the provider API base URL; the adapter appends `/chat/completions` unless the URL already ends with that path. Use the provider's server-side secret key. The browser invokes `generate-summary` with its authenticated session; only the Edge Function reads the AI key.
@@ -29,7 +35,9 @@ Study-set generation uses the same server-only `AI_API_URL`, `AI_API_KEY`, and `
 Ask Your Notes uses a 1536-dimensional pgvector index. Configure a compatible embedding model as an Edge Function secret:
 
 ```sh
-supabase secrets set AI_EMBEDDING_MODEL=<embedding-model-name> AI_EMBEDDING_DIMENSIONS=1536
+```sh
+npx supabase secrets set AI_EMBEDDING_MODEL=your-embedding-model AI_EMBEDDING_DIMENSIONS=1536
+```
 ```
 
 The embedding endpoint uses the same server-only `AI_API_URL` and `AI_API_KEY`. New document processing will create embeddings automatically. Documents processed before the vector migration must be reprocessed before they can be searched in Ask Your Notes. The `ask-notes` function verifies document ownership, scopes vector retrieval to the selected document IDs, and returns citations only for retrieved chunks. Never place AI credentials in frontend environment variables.
