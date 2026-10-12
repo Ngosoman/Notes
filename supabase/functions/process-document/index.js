@@ -111,7 +111,7 @@ async function extractPdfPages(blob) {
     const pageTexts = Array.isArray(text) ? text : [text]
     return { pageCount: totalPages || pdf.numPages, pageTexts }
   } finally {
-    await pdf.destroy()
+    await pdf.cleanup()
   }
 }
 
