@@ -246,7 +246,7 @@ Deno.serve(async (request) => {
     if (error instanceof ProcessingError) {
       return respond({ error: error.message, code: error.code }, error.status)
     }
-    if (error instanceof AiProviderError) {
+    if (error instanceof AiProviderError || (typeof error?.code === 'string' && (error.code.startsWith('AI_') || error.code.startsWith('EMBEDDING_')))) {
       return respond({ error: error.message, code: error.code }, error.status)
     }
     return respond({ error: 'Something went wrong while extracting text from this PDF.', code: 'EXTRACTION_FAILED' }, 500)
