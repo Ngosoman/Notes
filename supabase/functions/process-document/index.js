@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { extractText, getDocumentProxy } from 'npm:unpdf@1.8.1'
-import { AiProviderError, embedTexts } from '../_shared/aiProvider.js'
+import { PDFDocument } from 'npm:pdf-lib@1.17.1'
+import { AiProviderError, embedTexts, transcribePdf } from '../_shared/aiProvider.js'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,10 @@ const MAX_PAGE_COUNT = 800
 const MAX_EXTRACTED_CHARACTERS = 4_000_000
 const MAX_CHUNK_CHARACTERS = 6000
 const CHUNK_OVERLAP_CHARACTERS = 500
+const MIN_PAGE_TEXT_CHARACTERS = 20
+const MAX_OCR_PAGES = 40
+const OCR_BATCH_PAGES = 8
+const OCR_PARALLEL_BATCHES = 2
 
 class ProcessingError extends Error {
   constructor(message, code, status = 422) {
@@ -55,7 +60,7 @@ function createChunks(pageTexts) {
 
   if (!documentText.trim()) {
     throw new ProcessingError(
-      'No selectable text was found. Scanned PDFs need OCR, which is not available yet.',
+      'No readable text was found in this PDF, even after scanning its pages for text.',
       'NO_SELECTABLE_TEXT',
     )
   }
@@ -100,6 +105,7 @@ function createChunks(pageTexts) {
 
 async function extractPdfPages(blob) {
   const bytes = new Uint8Array(await blob.arrayBuffer())
+  const sourceBytes = bytes.slice()
   const pdf = await getDocumentProxy(bytes, { maxImageSize: 16_777_216 })
 
   try {
@@ -109,10 +115,37 @@ async function extractPdfPages(blob) {
 
     const { totalPages, text } = await extractText(pdf, { mergePages: false })
     const pageTexts = Array.isArray(text) ? text : [text]
-    return { pageCount: totalPages || pdf.numPages, pageTexts }
+    return { pageCount: totalPages || pdf.numPages, pageTexts, sourceBytes }
   } finally {
     await pdf.cleanup()
   }
+}
+
+async function ocrBlankPages(sourceBytes, pageTexts, pageCount) {
+  const blankPages = []
+  for (let index = 0; index < pageCount; index += 1) {
+    if (cleanPageText(pageTexts[index] || '').length < MIN_PAGE_TEXT_CHARACTERS) blankPages.push(index)
+  }
+  if (!blankPages.length) return { pageTexts, ocrPages: 0 }
+  if (blankPages.length > MAX_OCR_PAGES) {
+    throw new ProcessingError(`${blankPages.length} pages have no selectable text. Scanned PDFs can have at most ${MAX_OCR_PAGES} pages; split it into smaller documents and try again.`, 'OCR_PAGE_LIMIT', 413)
+  }
+
+  const source = await PDFDocument.load(sourceBytes, { ignoreEncryption: true })
+  const batches = []
+  for (let offset = 0; offset < blankPages.length; offset += OCR_BATCH_PAGES) batches.push(blankPages.slice(offset, offset + OCR_BATCH_PAGES))
+
+  const result = [...pageTexts]
+  for (let offset = 0; offset < batches.length; offset += OCR_PARALLEL_BATCHES) {
+    await Promise.all(batches.slice(offset, offset + OCR_PARALLEL_BATCHES).map(async (batch) => {
+      const part = await PDFDocument.create()
+      const copied = await part.copyPages(source, batch)
+      copied.forEach((page) => part.addPage(page))
+      const texts = await transcribePdf(await part.save(), batch.length)
+      batch.forEach((pageIndex, position) => { result[pageIndex] = texts[position] })
+    }))
+  }
+  return { pageTexts: result, ocrPages: blankPages.length }
 }
 
 Deno.serve(async (request) => {
@@ -197,7 +230,9 @@ Deno.serve(async (request) => {
       .download(document.storage_path)
     if (downloadError || !pdfBlob) throw new ProcessingError('The uploaded PDF could not be retrieved from private storage.', 'PRIVATE_FILE_UNAVAILABLE', 404)
 
-    const { pageCount, pageTexts } = await extractPdfPages(pdfBlob)
+    const extracted = await extractPdfPages(pdfBlob)
+    const { pageCount } = extracted
+    const { pageTexts, ocrPages } = await ocrBlankPages(extracted.sourceBytes, extracted.pageTexts, pageCount)
     const chunks = createChunks(pageTexts)
     const embeddings = []
     for (let offset = 0; offset < chunks.length; offset += 64) {
@@ -232,6 +267,7 @@ Deno.serve(async (request) => {
       documentId: document.id,
       pageCount,
       chunkCount: chunks.length,
+      ocrPages,
       status: 'uploaded',
     })
   } catch (error) {

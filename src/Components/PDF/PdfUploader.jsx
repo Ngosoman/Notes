@@ -21,7 +21,8 @@ function fileValidationMessage(error, objectIsStored) {
     return 'This PDF exceeds the storage limit. Choose a file under 50 MB.'
   }
   if (error?.code === 'NO_SELECTABLE_TEXT') return error.message
-  if (error?.code === 'PAGE_LIMIT_EXCEEDED' || error?.code === 'TEXT_LIMIT_EXCEEDED') return error.message
+  if (error?.code === 'PAGE_LIMIT_EXCEEDED' || error?.code === 'TEXT_LIMIT_EXCEEDED' || error?.code === 'OCR_PAGE_LIMIT') return error.message
+  if (error?.code?.startsWith('OCR_')) return `Your PDF is stored, but reading its scanned pages failed. ${error.message}`
   if (error?.code === 'EMBEDDINGS_NOT_CONFIGURED') return 'Your PDF is stored, but text processing needs AI embedding settings. Configure AI_API_URL, AI_API_KEY, and AI_EMBEDDING_MODEL as Supabase Edge Function secrets, then retry text extraction.'
   if (error?.code === 'EMBEDDING_DIMENSIONS_MISMATCH') return 'The configured embedding model must return 1536 dimensions. Update AI_EMBEDDING_DIMENSIONS and use a compatible model, then retry text extraction.'
   if (error?.code === 'EMBEDDING_PROVIDER_ERROR' || error?.code === 'EMBEDDING_UNAVAILABLE') return 'Your PDF is stored, but the AI embedding provider rejected the request or could not be reached. Check the server-side provider settings, then retry text extraction.'
@@ -213,9 +214,9 @@ export default function PdfUploader() {
           <progress className="pdf-progress" max="100" value={progress}>{progress}%</progress>
         </div>}
 
-        {uploadState === 'processing' && <div className="pdf-processing-state" role="status" aria-live="polite"><LoaderCircle className="auth-spinner" size={18} aria-hidden="true" /><span>Extracting text and preparing document sections…</span></div>}
+        {uploadState === 'processing' && <div className="pdf-processing-state" role="status" aria-live="polite"><LoaderCircle className="auth-spinner" size={18} aria-hidden="true" /><span>Extracting text (scanned pages are read with AI, which can take a minute) and preparing document sections…</span></div>}
 
-        {selectedFile && (uploadState === 'ready' || uploadState === 'failed') && (['NO_SELECTABLE_TEXT', 'PAGE_LIMIT_EXCEEDED', 'TEXT_LIMIT_EXCEEDED'].includes(processingFailureCode) ? (
+        {selectedFile && (uploadState === 'ready' || uploadState === 'failed') && (['NO_SELECTABLE_TEXT', 'PAGE_LIMIT_EXCEEDED', 'TEXT_LIMIT_EXCEEDED', 'OCR_PAGE_LIMIT'].includes(processingFailureCode) ? (
           <button className="button button-secondary pdf-upload-button" type="button" onClick={clearSelection}>Choose another PDF</button>
         ) : <button className="button pdf-upload-button" type="button" onClick={handleUpload}>
           <UploadCloud size={16} aria-hidden="true" />{uploadState === 'failed' ? objectIsStored ? 'Retry text extraction' : 'Retry upload' : 'Upload PDF'}
