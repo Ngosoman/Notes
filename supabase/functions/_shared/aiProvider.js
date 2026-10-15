@@ -84,27 +84,33 @@ export async function completeJson({ systemPrompt, userPrompt, temperature = 0.1
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
   try {
-    const response = await fetch(getChatCompletionsUrl(apiUrl), {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${apiKey}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        temperature,
-        max_tokens: maxTokens,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-      }),
-      signal: controller.signal,
-    })
+    let response
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      response = await fetch(getChatCompletionsUrl(apiUrl), {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          temperature,
+          max_tokens: maxTokens,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+        }),
+        signal: controller.signal,
+      })
+      if (![429, 500, 503].includes(response.status) || attempt === 3) break
+      await new Promise((resolve) => setTimeout(resolve, 2000 * 2 ** attempt))
+    }
 
     if (!response.ok) {
-      console.error('Configured AI endpoint rejected a request.', { status: response.status })
-      throw new AiProviderError('The configured AI provider could not complete the summary.', 'AI_PROVIDER_ERROR')
+      const detail = (await response.text().catch(() => '')).slice(0, 300)
+      console.error('Configured AI endpoint rejected a request.', { status: response.status, detail })
+      throw new AiProviderError(`The configured AI provider could not complete the summary (HTTP ${response.status}): ${detail}`, 'AI_PROVIDER_ERROR')
     }
 
     const payload = await response.json()
